@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "lignin",
+  "version": "${version}",
+  "name": "Lignin",
+  "description": "Found in Cell Wall\nLibrary code for Enderpalm's Minecraft mod",
+  "authors": [
+    "Enderpalm"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "dev.enderpalm.lignin.client.LigninClient"
+    ],
+    "main": [
+      "dev.enderpalm.lignin.Lignin"
+    ]
+  },
+  "mixins": [
+    "lignin.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric": "*",
+    "minecraft": "1.19.2"
+  }
+}
