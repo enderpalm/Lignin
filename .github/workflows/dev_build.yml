@@ -1,0 +1,35 @@
+name: Dev Build
+on: [pull_request, push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Validate Gradle
+        uses: gradle/wrapper-validation-action@v1
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: Action Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ./.gradle/loom-cache/remapped-mods
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Gradle wrapper stuff
+        run: chmod +x ./gradlew
+      - name: Fabric Datagen
+        run: ./gradlew runDatagenClient
+      - name: Build Jar
+        run: ./gradlew build
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Compiled artifacts for ${{ github.sha }}
+          path: build/libs
