@@ -11,16 +11,10 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "client": [
-      "dev.enderpalm.lignin.client.LigninClient"
-    ],
-    "main": [
-      "dev.enderpalm.lignin.Lignin"
-    ]
+    "client": ["dev.enderpalm.lignin.client.LigninClient"],
+    "main": ["dev.enderpalm.lignin.Lignin"]
   },
-  "mixins": [
-    "lignin.mixins.json"
-  ],
+  "mixins": ["lignin.mixins.json"],
   "depends": {
     "fabricloader": ">=0.14.9",
     "fabric": "*",
