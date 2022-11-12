@@ -55,14 +55,24 @@ jar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifactId = archivesBaseName
             from components.java
         }
     }
     repositories {
+        maven {
+            name = "GitHub-Packages"
+            url = "https://maven.pkg.github.com/enderpalm/Lignin"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
+
     loom {
         runs {
-            datagenClient { // Datagen Gradle Task
+            datagenClient {
                 inherit client
                 name "Data Generation"
                 vmArg "-Dfabric-api.datagen"
