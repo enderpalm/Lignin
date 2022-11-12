@@ -1,4 +1,4 @@
-name: Dev Build
+name: Dev Build (Java CI)
 on: [pull_request, push]
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
-      - name: Action Cache
+      - name: Create / Retrieve cache
         uses: actions/cache@v3
         with:
           path: |
@@ -22,11 +22,11 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Gradle wrapper stuff
+      - name: Grant permission to execute Gradle
         run: chmod +x ./gradlew
-      - name: Fabric Datagen
+      - name: Data generation (Fabric)
         run: ./gradlew runDatagenClient
-      - name: Build Jar
+      - name: Build Artifacts
         run: ./gradlew build
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
