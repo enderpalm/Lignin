@@ -10,8 +10,8 @@
     {
       "type": "bitmap",
       "file": "lignin:font/boxel.png",
-      "height": 5,
-      "ascent": 5,
+      "height": 6,
+      "ascent": 6,
       "chars": [
         "\u0000\u0021\u0022\u0027\u0028\u0029\u002a\u002b\u002d",
         "\u002c\u002e\u002f\u005c\u003a\u003b\u005b\u005d\u003f",
