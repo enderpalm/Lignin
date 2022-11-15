@@ -11,14 +11,10 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TitleScreen.class)
-public class TitleScreenMixin extends Screen {
-
-    private Component formattedSplash;
+public abstract class TitleScreenMixin extends Screen {
 
     @Shadow @Nullable private String splash;
 
@@ -26,15 +22,12 @@ public class TitleScreenMixin extends Screen {
         super(component);
     }
 
-    @Inject(method = "init", at = @At("HEAD"))
-    public void getFormattedSplash(CallbackInfo ci) {
-        this.formattedSplash = SplashComponentProvider.getFormattedSplash();
-        this.splash = formattedSplash.getString();
-    }
-
     @Redirect(method = "render", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/gui/screens/TitleScreen;drawCenteredString(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)V"))
     public void redirectSplashTextRender(@NotNull PoseStack poseStack, Font font, String s, int x, int y, int color){
-        drawCenteredString(poseStack, font, this.formattedSplash, x, y, 16777215);
+        SplashComponentProvider provider = new SplashComponentProvider();
+        Component formattedSplash = provider.getFormattedSplash();
+        if (!provider.forceShowVanilla()) drawCenteredString(poseStack, font, formattedSplash, x, y,16777215);
+        else drawCenteredString(poseStack, font, this.splash, x, y,16776960);
     }
 }
