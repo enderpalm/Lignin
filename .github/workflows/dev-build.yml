@@ -1,7 +1,7 @@
-name: Dev Build (Java CI)
+name: Dev Build
 on: [pull_request, push]
 jobs:
-  build:
+  Java CI:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
