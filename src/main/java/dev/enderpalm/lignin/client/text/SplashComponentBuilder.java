@@ -35,15 +35,16 @@ public final class SplashComponentBuilder {
                 || this.time.checkAnniversary(12,24)
                 || this.time.checkAnniversary(1,1)
                 || this.time.checkAnniversary(10,31);
-        this.shufflerIndex = randomSource.nextInt(this.randomSplashComponent.size());
+        var size = this.randomSplashComponent.size();
+        this.shufflerIndex = randomSource.nextInt(size != 0 ? size : 1);
     }
 
-    public SplashComponentBuilder append(Component splash){
+    private SplashComponentBuilder append(Component splash){
         this.randomSplashComponent.add(splash);
         return this;
     }
 
-    public SplashComponentBuilder append(int month, int day, Component splash){
+    private SplashComponentBuilder append(int month, int day, Component splash){
         this.timedSplashComponent.put(new MonthAndDay(month, day), splash);
         return this;
     }

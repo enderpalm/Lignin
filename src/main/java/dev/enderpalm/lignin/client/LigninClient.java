@@ -9,6 +9,5 @@ public class LigninClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-
     }
 }
