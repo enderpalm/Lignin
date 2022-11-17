@@ -5,6 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,5 +22,9 @@ public class LigninClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         LOG.info("Lignin library: version {}", LIGNIN_VERSION);
+    }
+
+    public static @NotNull ResourceLocation path(String id){
+        return new ResourceLocation(MOD_ID, id);
     }
 }
