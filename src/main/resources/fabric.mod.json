@@ -14,6 +14,7 @@
     "client": ["dev.enderpalm.lignin.client.LigninClient"],
     "main": ["dev.enderpalm.lignin.Lignin"]
   },
+  "accessWidener": "lignin.accesswidener",
   "mixins": ["lignin.mixins.json"],
   "depends": {
     "fabricloader": ">=0.14.9",
