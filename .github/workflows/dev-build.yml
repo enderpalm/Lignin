@@ -24,8 +24,6 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Grant permission to execute Gradle
         run: chmod +x ./gradlew
-      - name: Data generation (Fabric)
-        run: ./gradlew runDatagenClient
       - name: Build Artifacts
         run: ./gradlew build
       - name: Upload Artifacts
