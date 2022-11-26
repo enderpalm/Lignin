@@ -1,14 +1,15 @@
 package dev.enderpalm.lignin.client;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Environment(EnvType.CLIENT)
 public class LigninClient implements ClientModInitializer {
@@ -17,11 +18,16 @@ public class LigninClient implements ClientModInitializer {
     private static final ModMetadata METADATA = FabricLoader.getInstance().getModContainer(MOD_ID).orElseThrow().getMetadata();;
     public static final String AUTHOR = METADATA.getAuthors().toString();
     public static final String LIGNIN_VERSION = METADATA.getVersion().getFriendlyString();
-    public static final Logger LOG = LoggerFactory.getLogger("Lignin");
+
+    public static final Logger LOG = LogUtils.getLogger();
+    public static String INSTANCE_SIGNATURE;
+    public static boolean DEV_ENV = FabricLoader.getInstance().isDevelopmentEnvironment();
 
     @Override
     public void onInitializeClient() {
         LOG.info("Lignin library: version {}", LIGNIN_VERSION);
+        INSTANCE_SIGNATURE = RandomStringUtils.randomAlphabetic(16);
+        if (DEV_ENV) LOG.info("Instance Signature: {}", INSTANCE_SIGNATURE);
     }
 
     public static @NotNull ResourceLocation path(String id){
