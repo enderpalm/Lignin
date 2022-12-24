@@ -8,6 +8,7 @@ group = project.maven_group
 
 repositories {
     maven {url = 'https://maven.parchmentmc.org'}
+    mavenCentral()
 }
 
 dependencies {
@@ -18,6 +19,8 @@ dependencies {
     }
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 }
 
 loom{
@@ -54,6 +57,10 @@ jar {
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
     }
+}
+
+test {
+    useJUnitPlatform()
 }
 
 publishing {
