@@ -1,4 +1,4 @@
-package dev.enderpalm.lignin.client.text;
+package dev.enderpalm.lignin.text;
 
 import dev.enderpalm.lignin.util.TimeHelper;
 import net.fabricmc.api.EnvType;

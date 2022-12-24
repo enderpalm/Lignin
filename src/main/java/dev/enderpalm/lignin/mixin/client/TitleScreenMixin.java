@@ -1,7 +1,7 @@
 package dev.enderpalm.lignin.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.enderpalm.lignin.client.text.SplashComponentBuilder;
+import dev.enderpalm.lignin.text.SplashComponentBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;

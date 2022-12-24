@@ -1,4 +1,4 @@
-package dev.enderpalm.lignin.client;
+package dev.enderpalm.lignin.core;
 
 import com.mojang.logging.LogUtils;
 import net.fabricmc.api.ClientModInitializer;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class LigninClient implements ClientModInitializer {
+public final class ClientEntry implements ClientModInitializer {
 
     public static final String MOD_ID = "lignin";
     private static final ModMetadata METADATA = FabricLoader.getInstance().getModContainer(MOD_ID).orElseThrow().getMetadata();;
