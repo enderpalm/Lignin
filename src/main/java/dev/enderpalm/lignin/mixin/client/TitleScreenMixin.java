@@ -2,7 +2,6 @@ package dev.enderpalm.lignin.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.enderpalm.lignin.text.SplashComponentBuilder;
-import dev.enderpalm.lignin.text.badge.BadgeBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -24,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class TitleScreenMixin extends Screen {
 
     @Shadow @Nullable private String splash;
+
     SplashComponentBuilder builder = new SplashComponentBuilder();
 
     protected TitleScreenMixin(Component component) {

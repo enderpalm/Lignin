@@ -7,5 +7,6 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Environment(EnvType.CLIENT)
 @Mixin(Font.class)
-public class FontMixin {
+public abstract class FontMixin {
+
 }
