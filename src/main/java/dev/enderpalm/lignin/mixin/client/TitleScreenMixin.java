@@ -23,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class TitleScreenMixin extends Screen {
 
     @Shadow @Nullable private String splash;
+
     SplashComponentBuilder builder = new SplashComponentBuilder();
 
     protected TitleScreenMixin(Component component) {
