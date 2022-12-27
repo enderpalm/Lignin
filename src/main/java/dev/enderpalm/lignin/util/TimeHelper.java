@@ -1,5 +1,6 @@
 package dev.enderpalm.lignin.util;
 
+import dev.enderpalm.lignin.core.ClientEntry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Calendar;
