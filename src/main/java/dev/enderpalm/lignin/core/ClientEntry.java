@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.resources.ResourceLocation;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -20,14 +19,11 @@ public final class ClientEntry implements ClientModInitializer {
     public static final String LIGNIN_VERSION = METADATA.getVersion().getFriendlyString();
 
     public static final Logger LOG = LogUtils.getLogger();
-    public static String INSTANCE_SIGNATURE;
     public static boolean DEV_ENV = FabricLoader.getInstance().isDevelopmentEnvironment();
 
     @Override
     public void onInitializeClient() {
         LOG.info("Lignin library: version {}", LIGNIN_VERSION);
-        INSTANCE_SIGNATURE = RandomStringUtils.randomAlphabetic(16);
-        if (DEV_ENV) LOG.info("Instance Signature: {}", INSTANCE_SIGNATURE);
     }
 
     public static @NotNull ResourceLocation path(String id){
