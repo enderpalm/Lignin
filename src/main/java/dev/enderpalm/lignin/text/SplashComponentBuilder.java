@@ -58,7 +58,7 @@ public final class SplashComponentBuilder {
         Predicate<TimeHelper.MonthAndDay> mnd = monthAndDay -> time.checkAnniversary(monthAndDay.month(), monthAndDay.day());
         var noValidDate = this.timedSplashComponent.keySet().stream().noneMatch(mnd);
         if (noValidDate) return forceShowVanilla || this.randomSplashComponent.isEmpty() ? getFallBack(vanillaSplash)
-                 : (Component) this.randomSplashComponent.toArray()[shufflerIndex];
+                : (Component) this.randomSplashComponent.toArray()[shufflerIndex];
         return Optional.ofNullable(this.timedSplashComponent.get(this.time.getCurrentMnD())).orElse(getFallBack(vanillaSplash));
     }
 }
