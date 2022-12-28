@@ -1,5 +1,7 @@
 package dev.enderpalm.lignin.text;
 
+import dev.enderpalm.lignin.text.decorator.Decorator;
+import dev.enderpalm.lignin.text.decorator.enums.DropShadow;
 import dev.enderpalm.lignin.util.TimeHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -50,8 +52,8 @@ public final class SplashComponentBuilder {
     }
 
     private Component getFallBack(String vanillaSplash){
-        return Component.literal(vanillaSplash).withStyle(style ->
-                style.withColor(ChatFormatting.YELLOW));
+        return ((Decorator) Component.literal(vanillaSplash).withStyle(style ->
+                style.withColor(ChatFormatting.YELLOW))).fillSolid(25,26, DropShadow.RIGHT,2);
     }
 
     public @NotNull Component getFormattedSplash(String vanillaSplash){
