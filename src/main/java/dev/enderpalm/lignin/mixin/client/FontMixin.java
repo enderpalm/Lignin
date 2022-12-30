@@ -3,6 +3,7 @@ package dev.enderpalm.lignin.mixin.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Matrix4f;
+import dev.enderpalm.lignin.text.decorator.DecoratorRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Font;
@@ -37,11 +38,11 @@ public abstract class FontMixin {
      * Replace old drawInternal method in {@link Font} to accept PoseStack instead of last().pose()
      */
     private int drawComponentWithPoseStack(@NotNull PoseStack poseStack, Component component, float x, float y, int color, boolean drawShadow){
-        poseStack.pushPose();
+        DecoratorRenderer.decoratePre(poseStack, component, x, y);
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         int i = this.drawInBatch(component, x, y, color, drawShadow, poseStack.last().pose(), bufferSource, false, 0, 15728880);
         bufferSource.endBatch();
-        poseStack.popPose();
+        DecoratorRenderer.decoratePost(poseStack, component, x, y);
         return i;
     }
 }
