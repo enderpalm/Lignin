@@ -21,14 +21,16 @@ public abstract class FontMixin {
 
     @Shadow public abstract int drawInBatch(Component text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, MultiBufferSource buffer, boolean transparent, int backgroundColor, int packedLight);
 
-    @Inject(method = "draw(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/network/chat/Component;FFI)I", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "draw(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/network/chat/Component;FFI)I", at = @At("HEAD"), cancellable = true)
     public void drawComponent(PoseStack poseStack, Component text, float x, float y, int color, @NotNull CallbackInfoReturnable<Integer> cir){
         cir.setReturnValue(this.drawComponentWithPoseStack(poseStack, text, x, y, color, false));
+        cir.cancel();
     }
 
-    @Inject(method = "drawShadow(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/network/chat/Component;FFI)I", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "drawShadow(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/network/chat/Component;FFI)I", at = @At("HEAD"), cancellable = true)
     public void drawShadowComponent(PoseStack poseStack, Component text, float x, float y, int color, @NotNull CallbackInfoReturnable<Integer> cir){
         cir.setReturnValue(this.drawComponentWithPoseStack(poseStack, text, x, y, color, true));
+        cir.cancel();
     }
 
     /**
@@ -38,6 +40,7 @@ public abstract class FontMixin {
         poseStack.pushPose();
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         int i = this.drawInBatch(component, x, y, color, drawShadow, poseStack.last().pose(), bufferSource, false, 0, 15728880);
+        bufferSource.endBatch();
         poseStack.popPose();
         return i;
     }
