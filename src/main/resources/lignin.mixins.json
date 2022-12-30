@@ -8,6 +8,7 @@
   ],
   "client": [
     "client.FontMixin",
+    "client.GuiComponentMixin",
     "client.TitleScreenMixin"
   ],
   "injectors": {
