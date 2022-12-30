@@ -52,8 +52,8 @@ public final class SplashComponentBuilder {
     }
 
     private Component getFallBack(String vanillaSplash){
-        return ((Decorator) Component.literal(vanillaSplash).withStyle(style ->
-                style.withColor(ChatFormatting.YELLOW))).fillSolid(25,26, DropShadow.RIGHT,2);
+        return Component.literal(vanillaSplash).withStyle(style ->
+                style.withColor(ChatFormatting.YELLOW));
     }
 
     public @NotNull Component getFormattedSplash(String vanillaSplash){

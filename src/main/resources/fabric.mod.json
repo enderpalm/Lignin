@@ -11,14 +11,25 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "client": ["dev.enderpalm.lignin.core.ClientEntry"],
-    "main": ["dev.enderpalm.lignin.core.CommonEntry"]
+    "client": [
+      "dev.enderpalm.lignin.core.ClientEntry"
+    ],
+    "main": [
+      "dev.enderpalm.lignin.core.CommonEntry"
+    ]
   },
   "accessWidener": "lignin.accesswidener",
-  "mixins": ["lignin.mixins.json"],
+  "mixins": [
+    "lignin.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.14.9",
     "fabric": "*",
     "minecraft": "1.19.2"
+  },
+  "custom": {
+    "loom:injected_interfaces": {
+      "net/minecraft/class_5250": ["dev/enderpalm/lignin/text/decorator/Decorator"]
+    }
   }
 }

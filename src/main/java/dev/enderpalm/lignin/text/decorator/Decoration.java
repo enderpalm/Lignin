@@ -5,7 +5,5 @@ import dev.enderpalm.lignin.text.decorator.enums.Style;
 
 public record Decoration(Style style, int primaryColor, int secondaryColor, int borderRadius, DropShadow dropShadow) {
 
-    Decoration(Style style, int color, int borderRadius, DropShadow dropShadow){
-        this(style, color, 0, borderRadius, dropShadow);
-    }
+    public static Decoration DEFAULT = new Decoration(Style.FILL_SOLID,0,0,0,DropShadow.NONE);
 }

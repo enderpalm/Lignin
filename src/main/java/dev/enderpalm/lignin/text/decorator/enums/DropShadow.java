@@ -4,6 +4,7 @@ import com.mojang.math.Vector3d;
 import org.jetbrains.annotations.NotNull;
 
 public enum DropShadow {
+    NONE(toVector(0,0)),
     UP(toVector(0,1)),
     DOWN(toVector(0,-1)),
     LEFT(toVector(-1,0)),
