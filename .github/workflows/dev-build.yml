@@ -1,21 +1,19 @@
 name: Dev Build
-on: [pull_request, push]
+on: [push]
 
 jobs:
   dev-build:
     strategy:
       matrix:
-        java: [
-          17,    # Current Java LTS & minimum supported by Minecraft
-        ]
+        java: [17,] # Current Java LTS & minimum supported by Minecraft
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v3
-      - name: validate gradle wrapper
+      - name: Validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
-      - name: setup jdk ${{ matrix.java }}
+      - name: Setup jdk ${{ matrix.java }}
         uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java }}
@@ -30,10 +28,10 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: make gradle wrapper executable
-        if: ${{ runner.os != 'Windows' }}
+      - name: Make gradle wrapper executable
+        if: ${{ runner.os != 'Windows' }} # Windows doesn't recognize the +x flag
         run: chmod +x ./gradlew
-      - name: build
+      - name: Build artifact
         run: ./gradlew build --stacktrace
       - name: Cleanup
         run: ./gradlew --stop
