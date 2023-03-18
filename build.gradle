@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.0-SNAPSHOT'
+    id 'fabric-loom' version '1.+'
     id 'maven-publish'
 }
 
@@ -51,6 +51,7 @@ java {
     }
     archivesBaseName = project.archives_base_name
     withSourcesJar()
+    withJavadocJar()
 }
 
 jar {
@@ -72,7 +73,7 @@ publishing {
     }
     repositories {
         maven {
-            name = "GitHub-Packages"
+            name = "GitHubPackages"
             url = "https://maven.pkg.github.com/enderpalm/Lignin"
             credentials {
                 username = System.getenv("GITHUB_ACTOR")

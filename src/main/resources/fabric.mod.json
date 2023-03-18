@@ -3,7 +3,7 @@
   "id": "lignin",
   "version": "${version}",
   "name": "Lignin",
-  "description": "Found in Cell Wall\nLibrary code for Enderpalm's Minecraft mod",
+  "description": "Found in Cell Wall\nLibrary for my Minecraft mods; targets on rendering and providing level of abstractions / helpers",
   "authors": [
     "Enderpalm"
   ],
@@ -17,8 +17,8 @@
   "accessWidener": "lignin.accesswidener",
   "mixins": ["lignin.mixins.json"],
   "depends": {
-    "fabricloader": ">=0.14.9",
+    "fabricloader": ">=0.14.17",
     "fabric": "*",
-    "minecraft": "1.19.2"
+    "minecraft": "1.19.3"
   }
 }
