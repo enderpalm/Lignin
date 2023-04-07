@@ -12,19 +12,17 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "dev.enderpalm.lignin.ClientListener",
-      "dev.enderpalm.mock.LigninMockClient"
+      "dev.enderpalm.lignin.ClientListener"
     ],
     "main": [
-      "dev.enderpalm.lignin.LigninLib",
-      "dev.enderpalm.mock.LigninMockCommon"
+      "dev.enderpalm.lignin.LigninLib"
     ]
   },
   "accessWidener": "lignin.accesswidener",
   "mixins": ["lignin.mixins.json"],
   "depends": {
-    "fabricloader": ">=0.14.17",
+    "fabricloader": ">=${loader_version}",
     "fabric": "*",
-    "minecraft": "1.19.3"
+    "minecraft": "${minecraft_version}"
   }
 }

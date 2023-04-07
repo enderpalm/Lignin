@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "lignin-mock-impl",
+  "version": "${version}",
+  "name": "MockImpl",
+  "description": "Implementation test of LigninLib",
+  "authors": [
+    "Enderpalm"
+  ],
+  "contact": {
+    "repo": "https://github.com/enderpalm/Lignin"
+  },
+  "license": "MIT",
+  "icon": "assets/LigninMockImpl/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "dev.enderpalm.mock.client.MockImplClient"
+    ],
+    "main": [
+      "dev.enderpalm.mock.MockImpl"
+    ]
+  },
+  "mixins": [
+    "LigninMockImpl.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

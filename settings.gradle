@@ -10,3 +10,4 @@ pluginManagement {
 }
 
 rootProject.name = "Lignin"
+include ("MockImpl")
