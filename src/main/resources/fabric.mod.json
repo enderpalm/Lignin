@@ -11,8 +11,14 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "client": ["dev.enderpalm.lignin.core.ClientEntry"],
-    "main": ["dev.enderpalm.lignin.core.CommonEntry"]
+    "client": [
+      "dev.enderpalm.lignin.ClientListener",
+      "dev.enderpalm.mock.LigninMockClient"
+    ],
+    "main": [
+      "dev.enderpalm.lignin.LigninLib",
+      "dev.enderpalm.mock.LigninMockCommon"
+    ]
   },
   "accessWidener": "lignin.accesswidener",
   "mixins": ["lignin.mixins.json"],

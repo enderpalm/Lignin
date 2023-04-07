@@ -44,6 +44,15 @@ public final class Reference {
         return Minecraft.getInstance().getLaunchedVersion();
     }
 
+    /**
+     * Checks if the mock implementation of LigninLib is <u>disabled</u>
+     * @return <code>true</code> if <code>-Dlignin.disableMock</code> is set to <code>true</code>
+     * or if the environment is not a development environment
+     */
+    public static boolean isMockDisabled(){
+        return Boolean.getBoolean("lignin.disableMock") || !isDevEnv();
+    }
+
     public static boolean isDevEnv(){
         return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
