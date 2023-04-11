@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "lignin-mock",
+  "version": "${version}",
+  "name": "Lignin Mock",
+  "description": "Test implementation of Lignin used in dev environment",
+  "authors": ["Enderpalm"],
+  "contact": {},
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "client": ["dev.enderpalm.mock.MockClient"],
+    "main": ["dev.enderpalm.mock.MockCommon"]
+  },
+  "mixins": ["lignin-mock.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.14.17",
+    "fabric": "*",
+    "minecraft": "1.19.3"
+  }
+}

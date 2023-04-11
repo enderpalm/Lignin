@@ -7,7 +7,7 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-    maven {url = 'https://maven.parchmentmc.org'}
+    maven { url = 'https://maven.parchmentmc.org' }
     mavenCentral()
 }
 
@@ -23,16 +23,43 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 }
 
-loom{
+sourceSets {
+    test {
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+}
+
+loom {
     accessWidenerPath = file("src/main/resources/lignin.accesswidener")
+    runs {
+        mockClient {
+            client()
+            name = "Minecraft Client :Mock"
+            source sourceSets.test
+        }
+
+        mockServer {
+            server()
+            name = "Minecraft Server :Mock"
+            source sourceSets.test
+        }
+    }
+    runConfigs.configureEach {
+        ideConfigGenerated project.rootProject == project
+    }
 }
 
 processResources {
     inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "loader_version", project.loader_version
     filteringCharset "UTF-8"
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand "version": project.version,
+                "minecraft_version": project.minecraft_version,
+                "loader_version": project.loader_version
     }
 }
 
