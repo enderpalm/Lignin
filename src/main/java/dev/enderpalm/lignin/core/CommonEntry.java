@@ -6,6 +6,6 @@ public class CommonEntry implements ModInitializer {
 
     @Override
     public void onInitialize() {
-
+        System.out.println("CommonEntry.onInitialize()");
     }
 }
