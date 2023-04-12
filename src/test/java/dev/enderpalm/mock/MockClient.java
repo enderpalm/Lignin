@@ -12,6 +12,6 @@ public class MockClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        System.out.println("MockClient.onInitializeClient()");
+
     }
 }

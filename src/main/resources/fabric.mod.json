@@ -3,11 +3,14 @@
   "id": "lignin",
   "version": "${version}",
   "name": "Lignin",
-  "description": "Found in Cell Wall\nLibrary for my Minecraft mods; targets on rendering and providing level of abstractions / helpers",
+  "description": "Library for in-game Graphics and Interaction",
   "authors": [
     "Enderpalm"
   ],
-  "contact": {},
+  "contact": {
+    "sources": "https://github.com/enderpalm/Lignin",
+    "issues": "https://github.com/enderpalm/Lignin/issues"
+  },
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
@@ -20,5 +23,10 @@
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "minecraft": "${minecraft_version}"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": ["library"]
+    }
   }
 }
