@@ -13,10 +13,6 @@
   },
   "license": "MIT",
   "environment": "*",
-  "entrypoints": {
-    "client": ["dev.enderpalm.lignin.core.ClientEntry"],
-    "main": ["dev.enderpalm.lignin.core.CommonEntry"]
-  },
   "accessWidener": "lignin.accesswidener",
   "mixins": ["lignin.mixins.json"],
   "depends": {
