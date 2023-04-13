@@ -6,6 +6,6 @@ public class MockCommon implements ModInitializer {
 
     @Override
     public void onInitialize() {
-
+        System.out.println("CommonEntry.onInitialize()");
     }
 }
