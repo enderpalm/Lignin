@@ -21,7 +21,6 @@
   "mixins": ["lignin.mixins.json"],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": "*",
     "minecraft": "${minecraft_version}"
   },
   "custom": {
