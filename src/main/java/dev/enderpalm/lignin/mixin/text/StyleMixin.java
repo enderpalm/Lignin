@@ -1,4 +1,4 @@
-package dev.enderpalm.lignin.mixin;
+package dev.enderpalm.lignin.mixin.text;
 
 import dev.enderpalm.lignin.text.StyleInjector;
 import dev.enderpalm.lignin.text.container.Badge;
@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Style.class)
@@ -45,8 +46,6 @@ public abstract class StyleMixin implements StyleInjector {
         return StyleInjector.super.duckConstruct(badge, textColor, bold, italic, underlined, strikethrough, obfuscated, clickEvent, hoverEvent, insertion, font);
     }
 
-    //Todo: Apply formats, apply to
-
     @Override
     public Style withBadge(Badge badge) {
         return this.duckConstruct(badge, this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font);
@@ -64,7 +63,7 @@ public abstract class StyleMixin implements StyleInjector {
 
     @Inject(method = "applyTo", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/network/chat/Style;<init>(Lnet/minecraft/network/chat/TextColor;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lnet/minecraft/network/chat/ClickEvent;Lnet/minecraft/network/chat/HoverEvent;Ljava/lang/String;Lnet/minecraft/resources/ResourceLocation;)V"), cancellable = true)
-    private void applyTo(Style style, CallbackInfoReturnable<Style> cir) {
+    private void applyTo(Style style, @NotNull CallbackInfoReturnable<Style> cir) {
         cir.setReturnValue(this.duckConstruct(this.badge == null ? style.getBadge() : this.badge,
                 this.color == null ? style.getColor() : this.color,
                 this.bold == null ? style.isBold() : this.bold,
@@ -77,5 +76,23 @@ public abstract class StyleMixin implements StyleInjector {
                 this.insertion == null ? style.getInsertion() : this.insertion,
                 this.font == null ? style.getFont() : this.font
         ));
+    }
+
+    @Redirect(method = "toString", at = @At(value = "INVOKE",
+            target = "Ljava/lang/StringBuilder;append(Ljava/lang/String;)Ljava/lang/StringBuilder;"))
+    private @NotNull StringBuilder appendCustomFlag(@NotNull StringBuilder instance, String str) {
+        class Collector {
+            private boolean isFirst = instance.charAt(instance.length() - 1) == '{';
+
+            void addValueString(String entry, @Nullable Object value) {
+                if (value == null) return;
+                if (this.isFirst) this.isFirst = false;
+                else instance.append(',');
+                instance.append(entry).append("=").append(value);
+            }
+        }
+        Collector cl = new Collector();
+        cl.addValueString("badge", this.badge);
+        return instance.append(str);
     }
 }
