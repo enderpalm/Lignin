@@ -7,7 +7,6 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -17,7 +16,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Style.class)
@@ -30,8 +28,7 @@ public abstract class StyleMixin implements StyleInjector {
     @Override
     public Style withBadge(Badge badge) {
         this.badge = badge;
-        EMPTY = new Style(null, null, null, null, null, null, null, null, null, null);
-        return (Style) (Object) this;
+        return this.setupStatic();
     }
 
     @Override
@@ -55,6 +52,11 @@ public abstract class StyleMixin implements StyleInjector {
         Collector cl = new Collector();
         cl.addValueString("badge", this.badge);
         return instance.append(str);
+    }
+
+    private Style setupStatic(){
+        EMPTY = new Style(null, null, null, null, null, null, null, null, null, null);
+        return (Style) (Object) this;
     }
 
     @Inject(method = "withColor(Lnet/minecraft/network/chat/TextColor;)Lnet/minecraft/network/chat/Style;", at = @At("RETURN"), cancellable = true)
