@@ -26,7 +26,7 @@ public abstract class StyleMixin implements StyleInjector {
     @Nullable Badge badge;
 
     @Override
-    public Style withBadge(Badge badge) {
+    public Style withBadge(@Nullable Badge badge) {
         this.badge = badge;
         return this.setupStatic();
     }
