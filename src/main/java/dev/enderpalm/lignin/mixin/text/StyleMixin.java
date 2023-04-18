@@ -36,6 +36,11 @@ public abstract class StyleMixin implements StyleInjector {
         return this.badge;
     }
 
+    @Inject(method = "isEmpty", at = @At("RETURN"), cancellable = true)
+    private void isEmpty(CallbackInfoReturnable<Boolean> cir){
+        cir.setReturnValue(cir.getReturnValueZ() && this.badge == null);
+    }
+
     @Redirect(method = "toString", at = @At(value = "INVOKE",
             target = "Ljava/lang/StringBuilder;append(Ljava/lang/String;)Ljava/lang/StringBuilder;"))
     private @NotNull StringBuilder appendCustomFlag(@NotNull StringBuilder instance, String str) {

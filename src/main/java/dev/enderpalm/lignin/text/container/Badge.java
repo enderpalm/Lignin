@@ -81,9 +81,9 @@ public class Badge {
     private static @Nullable Integer parseColor(@Nullable String color) {
         if (color != null) {
             if (color.equals("auto")) return -1;
-            if (color.startsWith("#")) {
+            if (color.startsWith("#"))
                 return Integer.parseInt(color.substring(1), 16);
-            }
+            else return Integer.parseInt(color,10);
         }
         return null;
     }
@@ -129,17 +129,36 @@ public class Badge {
         return collector.terminate().toString();
     }
 
+    public static JsonObject serialize(@Nullable Badge badge) {
+        JsonObject json = new JsonObject();
+        if (badge != null){
+            if (badge.bg0 != null) json.addProperty("bg0", badge.bg0);
+            if (badge.bg1 != null) json.addProperty("bg1", badge.bg1);
+            if (badge.cornerRadius != null) json.addProperty("cornerRadius", badge.cornerRadius);
+            if (badge.border0 != null) json.addProperty("border0", badge.border0);
+            if (badge.border1 != null) json.addProperty("border1", badge.border1);
+            if (badge.shadowColor != null) json.addProperty("shadowColor", badge.shadowColor);
+            if (badge.shadowDir != null) json.addProperty("shadowDir", badge.shadowDir.getSerializedName());
+            if (badge.texture != null) json.addProperty("texture", badge.texture.toString());
+        }
+        return json;
+    }
+
     @Nullable
     public static Badge deserialize(@NotNull JsonObject json) {
-        if (!json.has("badge")) return null;
-        Badge badge = new Badge();
-        JsonObject obj = json.getAsJsonObject("badge");
-        badge.withBgColor(getColor(obj, "bg0")).withBgColor(getColor(obj, "bg1"));
-        badge.innerWithCornerRadius(obj.has("cornerRadius") ? obj.get("cornerRadius").getAsByte() : null);
-        badge.withBorderColor(getColor(obj, "border0")).withBorderColor(getColor(obj, "border1"));
-        badge.withTextShadow(getColor(obj, "shadowColor"), ShadowDir.getFromJson(obj, "shadowDir"));
-        badge.withTexture(getTexture(obj));
-        return badge;
+        if (json.has("badge")) {
+            JsonObject obj = GsonHelper.getAsJsonObject(json,"badge");
+            Integer bg0 = getColor(obj, "bg0");
+            Integer bg1 = getColor(obj, "bg1");
+            Byte cornerRadius = obj.has("cornerRadius") ? GsonHelper.getAsByte(obj, "cornerRadius") : null;
+            Integer border0 = getColor(obj, "border0");
+            Integer border1 = getColor(obj, "border1");
+            Integer shadowColor = getColor(obj, "shadowColor");
+            ShadowDir shadowDir = ShadowDir.getFromJson(obj, "shadowDir");
+            ResourceLocation texture = getTexture(obj);
+            return new Badge(bg0, bg1, cornerRadius, border0, border1, shadowColor, shadowDir, texture);
+        }
+        return null;
     }
 
     @Nullable

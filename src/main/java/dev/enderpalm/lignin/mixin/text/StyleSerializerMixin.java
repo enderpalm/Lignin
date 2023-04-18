@@ -31,8 +31,11 @@ public abstract class StyleSerializerMixin {
     }
 
     @Inject(method = "serialize(Lnet/minecraft/network/chat/Style;Ljava/lang/reflect/Type;Lcom/google/gson/JsonSerializationContext;)Lcom/google/gson/JsonElement;",
-            at = @At(value = "TAIL", shift = At.Shift.BEFORE), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void serialize(Style style, Type type, JsonSerializationContext jsonSerializationContext, CallbackInfoReturnable<JsonElement> cir, JsonObject jsonObject){
-        cir.setReturnValue(jsonObject);
+            at = @At(value = "RETURN"), cancellable = true)
+    private void serialize(Style style, Type type, JsonSerializationContext jsonSerializationContext, CallbackInfoReturnable<JsonElement> cir){
+        JsonObject obj = (JsonObject) cir.getReturnValue();
+        if (style.getBadge() != null)
+            obj.add("badge", Badge.serialize(style.getBadge()));
+        cir.setReturnValue(obj);
     }
 }
