@@ -79,6 +79,12 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+if (JavaVersion.current().isJava8Compatible()) {
+    tasks.withType(Javadoc).configureEach {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     if (JavaVersion.current() < javaVersion) {

@@ -59,8 +59,11 @@ public abstract class StyleMixin implements StyleInjector {
     }
 
     /**
-     * @author Enderpalm
-     * @reason Replace <code>this == Style.EMPTY</code>, comparing by value instead of reference
+     * @Author Enderpalm
+     * Rewrite of {@link Style#applyTo(Style)} to use comparing with value instead of reference
+     * @param style Targeted style to apply to
+     * @return new instance of style with this instance's values applied to target style's values
+     * @reason When adding properties to {@link Style}, object is not newly initialized like Vanilla's methods.
      */
     @Overwrite
     public Style applyTo(Style style){
