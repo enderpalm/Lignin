@@ -71,11 +71,36 @@ public class Badge {
     }
 
     public Badge withTextShadow(@Nullable Integer shadowColor, @Nullable ShadowDir shadowDir) {
+        if (shadowColor == null || shadowDir == null) return this;
         return new Badge(this.bg0, this.bg1, this.cornerRadius, this.border0, this.border1, shadowColor, shadowDir, this.texture);
     }
 
     public Badge withTexture(@Nullable ResourceLocation texture) {
         return new Badge(this.bg0, this.bg1, this.cornerRadius, this.border0, this.border1, this.shadowColor, this.shadowDir, texture);
+    }
+
+    public ColorPair getBgColor() {
+        return new ColorPair(this.bg0, this.bg1);
+    }
+
+    public ColorPair getBorderColor() {
+        return new ColorPair(this.border0, this.border1);
+    }
+
+    public Integer getCornerRadius() {
+        return this.cornerRadius != null ? this.cornerRadius.intValue() : 0;
+    }
+
+    public @Nullable ShadowDir getShadowDir() {
+        return this.shadowDir;
+    }
+
+    public @Nullable Integer getShadowColor() {
+        return this.shadowColor;
+    }
+
+    public @Nullable ResourceLocation getTexture() {
+        return this.texture;
     }
 
     private static @Nullable Integer parseColor(@Nullable String color) {
@@ -177,6 +202,17 @@ public class Badge {
             }
         }
         return null;
+    }
+
+    public record ColorPair(@Nullable Integer color0, @Nullable Integer color1){
+
+        public boolean isDisabled(){
+            return color0 == null && color1 == null;
+        }
+
+        public boolean isAuto(){
+            return (color0 != null && color0 == -1) || (color1 != null && color1 == -1);
+        }
     }
 
     public enum ShadowDir implements StringRepresentable {
