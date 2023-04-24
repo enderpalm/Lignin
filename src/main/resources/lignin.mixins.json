@@ -8,6 +8,8 @@
     "text.StyleSerializerMixin"
   ],
   "client": [
+    "text.BakedGlyphMixin",
+    "text.StringRenderOutputMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -24,7 +24,8 @@
       "badges": ["library"]
     },
     "loom:injected_interfaces": {
-      "net/minecraft/class_2583": ["dev/enderpalm/lignin/text/StyleInjector"]
+      "net/minecraft/class_2583": ["dev/enderpalm/lignin/text/StyleInjector"],
+      "net/minecraft/class_382": ["dev/enderpalm/lignin/text/BakedGlyphInjector"]
     }
   }
 }

@@ -41,6 +41,7 @@ public class Badge {
     }
 
     public Badge withBgColor(@Nullable Integer bgColor) {
+        bgColor = this.ensureAlpha(bgColor);
         if (this.bg0 != null && this.bg1 != null) return this;
         if (this.bg0 == null)
             return new Badge(bgColor, this.bg1, this.cornerRadius, this.border0, this.border1, this.shadowColor, this.shadowDir, this.texture);
@@ -60,6 +61,7 @@ public class Badge {
     }
 
     public Badge withBorderColor(@Nullable Integer borderColor) {
+        borderColor = this.ensureAlpha(borderColor);
         if (this.border0 != null && this.border1 != null) return this;
         if (this.border0 == null)
             return new Badge(this.bg0, this.bg1, this.cornerRadius, borderColor, this.border1, this.shadowColor, this.shadowDir, this.texture);
@@ -204,16 +206,27 @@ public class Badge {
         return null;
     }
 
+    private @Nullable Integer ensureAlpha(@Nullable Integer color) {
+        if (color == null) return null;
+        return (color & -67108864) == 0 ? color | -16777216 : color;
+    }
+
     public record ColorPair(@Nullable Integer color0, @Nullable Integer color1){
 
+        public boolean isGradient() {
+            return !isDisabled() && !(color1 == null || Objects.equals(color0, color1));
+        }
+
         public boolean isDisabled(){
-            return color0 == null && color1 == null;
+            return color0 == null;
         }
 
         public boolean isAuto(){
             return (color0 != null && color0 == -1) || (color1 != null && color1 == -1);
         }
     }
+
+    private record Meta(){}
 
     public enum ShadowDir implements StringRepresentable {
 

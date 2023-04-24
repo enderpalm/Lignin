@@ -18,11 +18,9 @@ public class GuiComponentMixin {
     @Inject(method = "drawCenteredString(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V",
         at = @At("HEAD"), cancellable = true)
     private static void drawCenterString(PoseStack poseStack, Font font, Component text, int x, int y, int color, CallbackInfo ci){
-        Component text1 = text.copy().withStyle(style -> style.withBadge(new Badge().withBgColor("auto")).withBold(true).withStrikethrough(true));
+        Component text1 = Component.literal("Str ").append(text.copy().withStyle(style -> style.withBadge(new Badge().withBgColor(0xFF567D)).withColor(ChatFormatting.DARK_AQUA)));
         FormattedCharSequence formattedCharSequence = text1.getVisualOrderText();
         font.drawShadow(poseStack, formattedCharSequence, (float)(x - font.width(formattedCharSequence) / 2), (float)y, color);
-        Component text2 = text.copy().withStyle(style -> style.withBold(true).withBadge(new Badge()).withColor(ChatFormatting.RED));
-        font.drawShadow(poseStack, text2.getVisualOrderText(), (float)(x - font.width(text2.getVisualOrderText()) / 2), (float)y + 10, color);
         ci.cancel();
     }
 }
