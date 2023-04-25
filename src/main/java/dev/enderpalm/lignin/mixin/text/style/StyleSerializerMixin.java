@@ -1,4 +1,4 @@
-package dev.enderpalm.lignin.mixin.text;
+package dev.enderpalm.lignin.mixin.text.style;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;

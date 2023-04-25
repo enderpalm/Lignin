@@ -25,6 +25,8 @@ public class Badge {
     @Nullable private final ShadowDir shadowDir;
     @Nullable private final ResourceLocation texture;
 
+    private static final int TEXT_SPACER_OFFSET = 4;
+
     Badge(@Nullable Integer bg0, @Nullable Integer bg1, @Nullable Byte cornerRadius, @Nullable Integer border0, @Nullable Integer border1, @Nullable Integer shadowColor, @Nullable ShadowDir shadowDir, @Nullable ResourceLocation texture) {
         this.bg0 = bg0;
         this.bg1 = bg1;
@@ -211,6 +213,12 @@ public class Badge {
         return (color & -67108864) == 0 ? color | -16777216 : color;
     }
 
+    public static int renderOffset(@Nullable Badge left, @Nullable Badge right){
+        if ((left == null && right != null) || (left != null && right == null)) return TEXT_SPACER_OFFSET;
+        if (left != null && !left.equals(right)) return TEXT_SPACER_OFFSET + 1;
+        else return 0;
+    }
+
     public record ColorPair(@Nullable Integer color0, @Nullable Integer color1){
 
         public boolean isGradient() {
@@ -225,8 +233,6 @@ public class Badge {
             return (color0 != null && color0 == -1) || (color1 != null && color1 == -1);
         }
     }
-
-    private record Meta(){}
 
     public enum ShadowDir implements StringRepresentable {
 

@@ -1,4 +1,4 @@
-package dev.enderpalm.lignin.mixin.text;
+package dev.enderpalm.lignin.mixin.text.style;
 
 import dev.enderpalm.lignin.text.StyleInjector;
 import dev.enderpalm.lignin.text.container.Badge;
@@ -10,7 +10,10 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -19,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Objects;
 
 @Mixin(Style.class)
-public abstract class StyleMixin implements StyleInjector {
+public abstract class StyleMixin implements StyleInjector{
 
     @Shadow @Final @Nullable TextColor color;
     @Shadow @Final @Nullable Boolean bold;
@@ -32,14 +35,18 @@ public abstract class StyleMixin implements StyleInjector {
     @Shadow @Final @Nullable String insertion;
     @Shadow @Final @Nullable ResourceLocation font;
 
-    @Final @Mutable @Shadow public static Style EMPTY;
-
-    @Nullable Badge badge;
+    @Nullable private Badge badge;
 
     @Override
     public Style withBadge(@Nullable Badge badge) {
+        var obj = new Style(this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font);
+        obj.innerSetBadge(badge);
+        return obj;
+    }
+
+    @Override
+    public void innerSetBadge(@Nullable Badge badge) {
         this.badge = badge;
-        return this.setupStatic();
     }
 
     @Override
@@ -49,7 +56,7 @@ public abstract class StyleMixin implements StyleInjector {
 
     @Inject(method = "isEmpty", at = @At(value = "RETURN"), cancellable = true)
     private void isEmpty(CallbackInfoReturnable<Boolean> cir){
-        cir.setReturnValue(this.bold == null && this.italic == null && this.underlined == null && this.strikethrough == null && this.obfuscated == null && this.clickEvent == null && this.hoverEvent == null && this.insertion == null && this.font == null && this.badge == null);
+        cir.setReturnValue(this.color == null && this.bold == null && this.italic == null && this.underlined == null && this.strikethrough == null && this.obfuscated == null && this.clickEvent == null && this.hoverEvent == null && this.insertion == null && this.font == null && this.badge == null);
     }
 
     @Inject(method = "equals", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
@@ -101,11 +108,6 @@ public abstract class StyleMixin implements StyleInjector {
         return instance.append(str);
     }
 
-    private Style setupStatic(){
-        EMPTY = new Style(null, null, null, null, null, null, null, null, null, null);
-        return (Style) (Object) this;
-    }
-
     private void appendStyleProperties(@NotNull CallbackInfoReturnable<Style> cir){
         cir.setReturnValue(cir.getReturnValue().withBadge(this.badge));
     }
@@ -122,7 +124,7 @@ public abstract class StyleMixin implements StyleInjector {
 
     @Inject(method = "withColor(Lnet/minecraft/network/chat/TextColor;)Lnet/minecraft/network/chat/Style;", at = @At("RETURN"), cancellable = true)
     private void withColor(@Nullable TextColor color, @NotNull CallbackInfoReturnable<Style> cir) {
-        this.appendStyleProperties(cir);
+        cir.setReturnValue(cir.getReturnValue().withBadge(this.badge));
     }
 
     @Inject(method = {"withBold", "withItalic", "withUnderlined", "withStrikethrough", "withObfuscated"}, at = @At("RETURN"), cancellable = true)

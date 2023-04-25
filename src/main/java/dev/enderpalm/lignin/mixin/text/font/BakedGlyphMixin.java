@@ -1,4 +1,4 @@
-package dev.enderpalm.lignin.mixin.text;
+package dev.enderpalm.lignin.mixin.text.font;
 
 import dev.enderpalm.lignin.text.BakedGlyphInjector;
 import net.fabricmc.api.EnvType;

@@ -4,12 +4,13 @@
   "package": "dev.enderpalm.lignin.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "text.StyleMixin",
-    "text.StyleSerializerMixin"
+    "text.style.StyleMixin",
+    "text.style.StyleSerializerMixin"
   ],
   "client": [
-    "text.BakedGlyphMixin",
-    "text.StringRenderOutputMixin"
+    "text.font.BakedGlyphMixin",
+    "text.font.StringRenderOutputMixin",
+    "text.font.StringSplitterMixin"
   ],
   "injectors": {
     "defaultRequire": 1
