@@ -25,7 +25,7 @@ public class Badge {
     @Nullable private final ShadowDir shadowDir;
     @Nullable private final ResourceLocation texture;
 
-    private static final int TEXT_SPACER_OFFSET = 4;
+    public static final int TEXT_SPACER_OFFSET = 4;
 
     Badge(@Nullable Integer bg0, @Nullable Integer bg1, @Nullable Byte cornerRadius, @Nullable Integer border0, @Nullable Integer border1, @Nullable Integer shadowColor, @Nullable ShadowDir shadowDir, @Nullable ResourceLocation texture) {
         this.bg0 = bg0;
@@ -215,7 +215,7 @@ public class Badge {
 
     public static int renderOffset(@Nullable Badge left, @Nullable Badge right){
         if ((left == null && right != null) || (left != null && right == null)) return TEXT_SPACER_OFFSET;
-        if (left != null && !left.equals(right)) return TEXT_SPACER_OFFSET + 1;
+        if (left != null && !left.equals(right)) return (TEXT_SPACER_OFFSET << 1) + 1;
         else return 0;
     }
 

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Environment(EnvType.CLIENT)
 @Mixin(StringSplitter.class)
-public class StringSplitterMixin {
+public abstract class StringSplitterMixin {
 
     @Shadow @Final StringSplitter.WidthProvider widthProvider;
 
