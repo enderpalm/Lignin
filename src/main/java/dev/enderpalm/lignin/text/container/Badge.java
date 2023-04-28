@@ -18,16 +18,16 @@ public class Badge {
 
     @Nullable private final Integer bg0;
     @Nullable private final Integer bg1;
-    @Nullable private final Byte cornerRadius;
+    @Nullable private final Integer cornerRadius;
     @Nullable private final Integer border0;
     @Nullable private final Integer border1;
     @Nullable private final Integer shadowColor;
     @Nullable private final ShadowDir shadowDir;
     @Nullable private final ResourceLocation texture;
 
-    public static final int TEXT_SPACER_OFFSET = 4;
+    public static final int TEXT_SPACER_OFFSET = 2;
 
-    Badge(@Nullable Integer bg0, @Nullable Integer bg1, @Nullable Byte cornerRadius, @Nullable Integer border0, @Nullable Integer border1, @Nullable Integer shadowColor, @Nullable ShadowDir shadowDir, @Nullable ResourceLocation texture) {
+    public Badge(@Nullable Integer bg0, @Nullable Integer bg1, @Nullable Integer cornerRadius, @Nullable Integer border0, @Nullable Integer border1, @Nullable Integer shadowColor, @Nullable ShadowDir shadowDir, @Nullable ResourceLocation texture) {
         this.bg0 = bg0;
         this.bg1 = bg1;
         this.cornerRadius = cornerRadius;
@@ -42,8 +42,19 @@ public class Badge {
         this(null, null, null, null, null, null, null, null);
     }
 
+    public Badge(@NotNull Badge src) {
+        this.bg0 = src.bg0;
+        this.bg1 = src.bg1;
+        this.cornerRadius = src.cornerRadius;
+        this.border0 = src.border0;
+        this.border1 = src.border1;
+        this.shadowColor = src.shadowColor;
+        this.shadowDir = src.shadowDir;
+        this.texture = src.texture;
+    }
+
     public Badge withBgColor(@Nullable Integer bgColor) {
-        bgColor = this.ensureAlpha(bgColor);
+        bgColor = ensureAlpha(bgColor);
         if (this.bg0 != null && this.bg1 != null) return this;
         if (this.bg0 == null)
             return new Badge(bgColor, this.bg1, this.cornerRadius, this.border0, this.border1, this.shadowColor, this.shadowDir, this.texture);
@@ -54,16 +65,12 @@ public class Badge {
         return this.withBgColor(parseColor(bgColor));
     }
 
-    public Badge withCornerRadius(int cornerRadius) {
-        return this.innerWithCornerRadius((byte) cornerRadius);
-    }
-
-    private Badge innerWithCornerRadius(@Nullable Byte cornerRadius) {
+    public Badge withCornerRadius(@Nullable Integer cornerRadius) {
         return new Badge(this.bg0, this.bg1, cornerRadius, this.border0, this.border1, this.shadowColor, this.shadowDir, this.texture);
     }
 
     public Badge withBorderColor(@Nullable Integer borderColor) {
-        borderColor = this.ensureAlpha(borderColor);
+        borderColor = ensureAlpha(borderColor);
         if (this.border0 != null && this.border1 != null) return this;
         if (this.border0 == null)
             return new Badge(this.bg0, this.bg1, this.cornerRadius, borderColor, this.border1, this.shadowColor, this.shadowDir, this.texture);
@@ -91,8 +98,8 @@ public class Badge {
         return new ColorPair(this.border0, this.border1);
     }
 
-    public Integer getCornerRadius() {
-        return this.cornerRadius != null ? this.cornerRadius.intValue() : 0;
+    public @Nullable Integer getCornerRadius() {
+        return this.cornerRadius;
     }
 
     public @Nullable ShadowDir getShadowDir() {
@@ -109,26 +116,32 @@ public class Badge {
 
     private static @Nullable Integer parseColor(@Nullable String color) {
         if (color != null) {
+            var len = color.length();
             if (color.equals("auto")) return -1;
-            if (color.startsWith("#"))
-                return Integer.parseInt(color.substring(1), 16);
-            else return Integer.parseInt(color,10);
+            if (color.startsWith("#")) {
+                if (len > 9) throw new JsonSyntaxException("Invalid color: " + color);
+                else if (len < 8) return Integer.parseInt(color.substring(1), 16) | 0xFF000000;
+                else {
+                    var alpha = Integer.parseInt(color.substring(1, len - 6), 16);
+                    var rgb = Integer.parseInt(color.substring(len - 6), 16);
+                    return (alpha << 24) | rgb;
+                }
+            } else return Integer.parseInt(color);
         }
         return null;
     }
 
-    public Badge mergeFrom(@Nullable Badge badge) {
-        if (badge == null || this.equals(badge)) return this;
-        return new Badge(
-                badge.bg0 != null ? badge.bg0 : this.bg0,
-                badge.bg1 != null ? badge.bg1 : this.bg1,
-                badge.cornerRadius != null ? badge.cornerRadius : this.cornerRadius,
-                badge.border0 != null ? badge.border0 : this.border0,
-                badge.border1 != null ? badge.border1 : this.border1,
-                badge.shadowColor != null ? badge.shadowColor : this.shadowColor,
-                badge.shadowDir != null ? badge.shadowDir : this.shadowDir,
-                badge.texture != null ? badge.texture : this.texture
-        );
+    public Badge mergeFrom(@Nullable Badge src) {
+        if (this.isEmpty()) return src;
+        else if (src == null || src.isEmpty() || src.equals(this)) return this;
+        return new Badge()
+                .withBgColor(this.bg0 == null ? src.getBgColor().color0() : this.bg0)
+                .withBgColor(this.bg1 == null ? src.getBgColor().color1() : this.bg1)
+                .withCornerRadius(this.cornerRadius == null ? src.getCornerRadius() : this.cornerRadius)
+                .withBorderColor(this.border0 == null ? src.getBorderColor().color0() : this.border0)
+                .withBorderColor(this.border1 == null ? src.getBorderColor().color1() : this.border1)
+                .withTextShadow(this.shadowColor == null ? src.getShadowColor() : this.shadowColor, this.shadowDir == null ? this.getShadowDir() : this.shadowDir)
+                .withTexture(this.texture == null ? src.getTexture() : this.texture);
     }
 
     @Override
@@ -142,6 +155,10 @@ public class Badge {
                 && Objects.equals(this.shadowColor, badge.shadowColor)
                 && Objects.equals(this.shadowDir, badge.shadowDir)
                 && Objects.equals(this.texture, badge.texture);
+    }
+
+    public boolean isEmpty() {
+        return this.bg0 == null && this.bg1 == null && this.cornerRadius == null && this.border0 == null && this.border1 == null && this.shadowColor == null && this.shadowDir == null && this.texture == null;
     }
 
     @Override
@@ -158,9 +175,14 @@ public class Badge {
         return collector.terminate().toString();
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.bg0, this.bg1, this.cornerRadius, this.border0, this.border1, this.shadowColor, this.shadowDir, this.texture);
+    }
+
     public static JsonObject serialize(@Nullable Badge badge) {
         JsonObject json = new JsonObject();
-        if (badge != null){
+        if (badge != null) {
             if (badge.bg0 != null) json.addProperty("bg0", badge.bg0);
             if (badge.bg1 != null) json.addProperty("bg1", badge.bg1);
             if (badge.cornerRadius != null) json.addProperty("cornerRadius", badge.cornerRadius);
@@ -176,10 +198,10 @@ public class Badge {
     @Nullable
     public static Badge deserialize(@NotNull JsonObject json) {
         if (json.has("badge")) {
-            JsonObject obj = GsonHelper.getAsJsonObject(json,"badge");
+            JsonObject obj = GsonHelper.getAsJsonObject(json, "badge");
             Integer bg0 = getColor(obj, "bg0");
             Integer bg1 = getColor(obj, "bg1");
-            Byte cornerRadius = obj.has("cornerRadius") ? GsonHelper.getAsByte(obj, "cornerRadius") : null;
+            Integer cornerRadius = obj.has("cornerRadius") ? GsonHelper.getAsInt(obj, "cornerRadius") : null;
             Integer border0 = getColor(obj, "border0");
             Integer border1 = getColor(obj, "border1");
             Integer shadowColor = getColor(obj, "shadowColor");
@@ -192,7 +214,7 @@ public class Badge {
 
     @Nullable
     private static Integer getColor(JsonObject json, String key) {
-        return json.has(key) ? parseColor(GsonHelper.getAsString(json, key)) : null;
+        return json.has(key) ? ensureAlpha(parseColor(GsonHelper.getAsString(json, key))) : null;
     }
 
     @Nullable
@@ -208,29 +230,37 @@ public class Badge {
         return null;
     }
 
-    private @Nullable Integer ensureAlpha(@Nullable Integer color) {
+    private static @Nullable Integer ensureAlpha(@Nullable Integer color) {
         if (color == null) return null;
         return (color & -67108864) == 0 ? color | -16777216 : color;
     }
 
-    public static int renderOffset(@Nullable Badge left, @Nullable Badge right){
-        if ((left == null && right != null) || (left != null && right == null)) return TEXT_SPACER_OFFSET;
-        if (left != null && !left.equals(right)) return (TEXT_SPACER_OFFSET << 1) + 1;
+    public static int renderOffset(@Nullable Badge left, @Nullable Badge right) {
+        if ((left == null && right != null) || (left != null && right == null)) return TEXT_SPACER_OFFSET + 1;
+        if (left != null && !left.equals(right)) return TEXT_SPACER_OFFSET + 1;
         else return 0;
     }
 
-    public record ColorPair(@Nullable Integer color0, @Nullable Integer color1){
+    public record ColorPair(@Nullable Integer color0, @Nullable Integer color1) {
 
         public boolean isGradient() {
             return !isDisabled() && !(color1 == null || Objects.equals(color0, color1));
         }
 
-        public boolean isDisabled(){
+        public boolean isDisabled() {
             return color0 == null;
         }
 
-        public boolean isAuto(){
+        public boolean isAuto() {
             return (color0 != null && color0 == -1) || (color1 != null && color1 == -1);
+        }
+    }
+
+    public record BadgeCoord(Badge badge, float x0) {
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.badge, this.x0);
         }
     }
 
