@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.network.chat.Style;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -14,34 +13,20 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(BakedGlyph.class)
 public abstract class BakedGlyphMixin implements BakedGlyphInjector {
 
-    private int idx = 0;
-    private int codePoint = 0;
-    @Nullable Style style;
+    private boolean isInBadge;
 
     @Override
-    public void accept(int idx, Style style, int codePoint) {
-        this.idx = idx;
-        this.style = style;
-        this.codePoint = codePoint;
+    public void setInBadge(Style style) {
+        this.isInBadge = style != null && style.getBadge() != null;
     }
 
     @Override
-    public int getIdx() {
-        return this.idx;
-    }
-
-    @Override
-    public @Nullable Style getStyle() {
-        return this.style;
-    }
-
-    @Override
-    public int getCodePoint() {
-        return this.codePoint;
+    public boolean isInBadge() {
+        return this.isInBadge;
     }
 
     @ModifyArg(method = {"render", "renderEffect"}, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;vertex(Lorg/joml/Matrix4f;FFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"), index = 3)
-    private float render(float x){
+    private float render(float x) {
         return x + 0.01f;
     }
 }
