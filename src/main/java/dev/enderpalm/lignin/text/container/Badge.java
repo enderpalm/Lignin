@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import dev.enderpalm.lignin.text.StringCollector;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ByIdMap;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3i;
 
 import java.util.Objects;
+import java.util.function.IntFunction;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class Badge {
@@ -300,21 +302,28 @@ public class Badge {
 
     public enum ShadowDir implements StringRepresentable {
 
-        UP("up", new Vector3i(0, -1, 0)),
-        DOWN("down", new Vector3i(0, 1, 0)),
-        LEFT("left", new Vector3i(-1, 0, 0)),
-        RIGHT("right", new Vector3i(1, 0, 0)),
-        UPPER_LEFT("upper_left", new Vector3i(-1, -1, 0)),
-        UPPER_RIGHT("upper_right", new Vector3i(1, -1, 0)),
-        LOWER_LEFT("lower_left", new Vector3i(-1, 1, 0)),
-        LOWER_RIGHT("lower_right", new Vector3i(1, 1, 0));
+        UP(0, "up", new Vector3i(0, -1, 0)),
+        UPPER_RIGHT(1, "upper_right", new Vector3i(1, -1, 0)),
+        RIGHT(2, "right", new Vector3i(1, 0, 0)),
+        LOWER_RIGHT(3, "lower_right", new Vector3i(1, 1, 0)),
+        DOWN(4, "down", new Vector3i(0, 1, 0)),
+        LOWER_LEFT(5, "lower_left", new Vector3i(-1, 1, 0)),
+        LEFT(6, "left", new Vector3i(-1, 0, 0)),
+        UPPER_LEFT(7, "upper_left", new Vector3i(-1, -1, 0));
 
+        private final byte id;
         private final String name;
         private final Vector3i translation;
+        private static final IntFunction<ShadowDir> BY_ID = ByIdMap.continuous(ShadowDir::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
 
-        ShadowDir(String name, Vector3i translation) {
+        ShadowDir(int id, String name, Vector3i translation) {
+            this.id = (byte) id;
             this.name = name;
             this.translation = translation;
+        }
+
+        public int getId() {
+            return this.id;
         }
 
         @Override
@@ -326,13 +335,21 @@ public class Badge {
             return this.translation;
         }
 
+        public static ShadowDir byId(int id) {
+            return BY_ID.apply(id);
+        }
+
         private static @Nullable ShadowDir getFromJson(@NotNull JsonObject json, String key) {
             if (json.has(key)) {
                 String name = GsonHelper.getAsString(json, key);
                 try {
                     return ShadowDir.valueOf(name.toUpperCase());
                 } catch (JsonSyntaxException e) {
-                    throw new JsonSyntaxException("Invalid shadow direction: " + name);
+                    try {
+                        return ShadowDir.byId(Integer.parseInt(name));
+                    } catch (JsonSyntaxException e2) {
+                        throw new JsonSyntaxException("Invalid badge shadow direction: " + name);
+                    }
                 }
             }
             return null;

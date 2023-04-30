@@ -12,6 +12,7 @@ import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.FastColor;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -64,6 +65,13 @@ public abstract class StringRenderOutputMixin {
         }
         this.isNotLineStart = true;
         this.prevBadge = style.getBadge();
+    }
+
+    @Inject(method = "accept", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/MultiBufferSource;getBuffer(Lnet/minecraft/client/renderer/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;",
+            shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILSOFT)
+    private void renderBadgeContentShadow(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, FontSet fontSet, GlyphInfo glyphInfo, BakedGlyph bakedGlyph, boolean bl, float g, float h, float l, float f, TextColor textColor, float m, float n) {
+
     }
 
     @Redirect(method = "accept", at = @At(value = "INVOKE",
