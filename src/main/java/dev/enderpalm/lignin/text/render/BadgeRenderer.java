@@ -19,9 +19,6 @@ public final class BadgeRenderer {
     private static final ResourceLocation WHITE_TEXTURE = new ResourceLocation("textures/misc/white.png");
 
     public static void render(Badge badge, float x0, float x1, float y0, float y1, float depth, int tint, Matrix4f poseMatrix, MultiBufferSource bufferSource, Font.DisplayMode displayMode, int packedLightCoords) {
-        int halfSpace = (Badge.TEXT_SPACER_OFFSET << 1) - 1;
-        x0 -= halfSpace;
-        x1 += halfSpace;
         renderSolidBadge(badge, bufferSource, poseMatrix, x0, y0, x1, y1, depth, tint, displayMode, packedLightCoords);
     }
 

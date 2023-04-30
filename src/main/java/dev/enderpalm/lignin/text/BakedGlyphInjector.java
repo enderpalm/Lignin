@@ -8,7 +8,6 @@ import net.minecraft.network.chat.Style;
 public interface BakedGlyphInjector {
 
     default void setInBadge(Style style){
-
     }
 
     default boolean isInBadge(){

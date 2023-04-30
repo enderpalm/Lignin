@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 @Environment(EnvType.CLIENT)
 @Mixin(Font.StringRenderOutput.class)
@@ -42,10 +42,11 @@ public abstract class StringRenderOutputMixin {
     @Shadow @Final private boolean dropShadow;
     @Shadow @Final private Font.DisplayMode mode;
 
-    @Nullable private Badge beforeBadge;
-
+    @Nullable private Badge prevBadge;
     private float x0;
-    private HashMap<Badge.BadgeCoord, Float> badgeCoords = new HashMap<>();
+    private boolean isNotLineStart;
+    private boolean isPrevTextBold;
+    private ArrayList<Badge.BadgeBuffer> badgeBuffer = new ArrayList<>();
 
     @Inject(method = "accept", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/network/chat/Style;isBold()Z", shift = At.Shift.BEFORE),
@@ -53,15 +54,18 @@ public abstract class StringRenderOutputMixin {
     private void accept(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, FontSet fontSet, GlyphInfo glyphInfo, BakedGlyph bakedGlyph) {
         ((BakedGlyphInjector) bakedGlyph).setInBadge(style);
         Badge currentBadge = style.getBadge();
-        var offset = Badge.renderOffset(this.beforeBadge, currentBadge);
-        if (style.getBadge() != null) {
-            if (offset != 0) {
-                this.x0 = this.x;
-                this.badgeCoords.put(new Badge.BadgeCoord(currentBadge, this.x0), this.x0);
-            } else this.badgeCoords.put(new Badge.BadgeCoord(currentBadge, this.x0), this.x);
-        }
+        var offset = Badge.renderOffset(this.prevBadge, currentBadge, this.isNotLineStart, this.isPrevTextBold);
         this.x += offset;
-        beforeBadge = style.getBadge();
+        if (currentBadge != null) {
+            if (offset != 0) {
+                this.x0 = this.x - Badge.BADGE_BORDER_SPACER;
+                this.badgeBuffer.add(new Badge.BadgeBuffer(currentBadge, this.x0, this.x0));
+            }
+            this.badgeBuffer.get(this.badgeBuffer.size() - 1).setX1(this.x + (style.isBold() ? 1 : 0));
+        }
+        this.isNotLineStart = true;
+        this.prevBadge = style.getBadge();
+        this.isPrevTextBold = style.isBold();
     }
 
     @Redirect(method = "accept", at = @At(value = "INVOKE",
@@ -74,11 +78,9 @@ public abstract class StringRenderOutputMixin {
     @Inject(method = "finish", at = @At("HEAD"))
     private void finish(int backgroundColor, float x, CallbackInfoReturnable<Float> cir) {
         if (!this.dropShadow) {
-            int renderOffset = Badge.TEXT_SPACER_OFFSET << 1;
-            for (var buffer : this.badgeCoords.entrySet()) {
-                BadgeRenderer.render(buffer.getKey().badge(), buffer.getKey().x0() + renderOffset, buffer.getValue() + renderOffset, this.y - 1, this.y + 8, 0.0f, FastColor.ARGB32.color((int) (this.a * 255), (int) (this.r * 255), (int) (this.g * 255), (int) (this.b * 255)), this.pose, this.bufferSource, this.mode, this.packedLightCoords);
-            }
+            for (var buffer : this.badgeBuffer)
+                BadgeRenderer.render(buffer.getBadge(), buffer.getX0(), buffer.getX1() + (Badge.BADGE_BORDER_SPACER << 2) - 1, this.y - 1, this.y + 8, 0.0f, FastColor.ARGB32.color((int) (this.a * 255), (int) (this.r * 255), (int) (this.g * 255), (int) (this.b * 255)), this.pose, this.bufferSource, this.mode, this.packedLightCoords);
         }
-        this.badgeCoords = null;
+        this.badgeBuffer = null;
     }
 }

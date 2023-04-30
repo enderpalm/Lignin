@@ -25,7 +25,10 @@ public class Badge {
     @Nullable private final ShadowDir shadowDir;
     @Nullable private final ResourceLocation texture;
 
-    public static final int TEXT_SPACER_OFFSET = 2;
+    /**
+     * Pixel count between horizontal border and badge content.
+     */
+    public static final int BADGE_BORDER_SPACER = 2;
 
     public Badge(@Nullable Integer bg0, @Nullable Integer bg1, @Nullable Integer cornerRadius, @Nullable Integer border0, @Nullable Integer border1, @Nullable Integer shadowColor, @Nullable ShadowDir shadowDir, @Nullable ResourceLocation texture) {
         this.bg0 = bg0;
@@ -235,10 +238,22 @@ public class Badge {
         return (color & -67108864) == 0 ? color | -16777216 : color;
     }
 
-    public static int renderOffset(@Nullable Badge left, @Nullable Badge right) {
-        if ((left == null && right != null) || (left != null && right == null)) return TEXT_SPACER_OFFSET + 1;
-        if (left != null && !left.equals(right)) return TEXT_SPACER_OFFSET + 1;
-        else return 0;
+    /**
+     * Append render offset between text-badge (entering), badge-text (leaving) and badge-badge (different)
+     *
+     * @param prev           previous {@link Badge}
+     * @param cur            current {@link Badge}
+     * @param notLineStart   check if the badge is at line start, decrease offset by 1 if false
+     * @param isPrevTextBold check if the previous text is bold, increase offset by 1 if true
+     * @return Offset amount
+     */
+    public static int renderOffset(@Nullable Badge prev, @Nullable Badge cur, boolean notLineStart, boolean isPrevTextBold) {
+        var otherOffset = (notLineStart ? 1 : 0);
+        if (prev != null && cur != null && !prev.equals(cur)) // different
+            return (BADGE_BORDER_SPACER << 1) + otherOffset;
+        else if ((prev == null && cur != null) || (prev != null && cur == null)) // entering - leaving
+            return BADGE_BORDER_SPACER + otherOffset;
+        return 0;
     }
 
     public record ColorPair(@Nullable Integer color0, @Nullable Integer color1) {
@@ -256,11 +271,31 @@ public class Badge {
         }
     }
 
-    public record BadgeCoord(Badge badge, float x0) {
+    public static class BadgeBuffer{
+        @NotNull private final Badge badge;
+        private final float x0;
+        private float x1;
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.badge, this.x0);
+        public BadgeBuffer(@NotNull Badge badge, float x0, float x1) {
+            this.badge = badge;
+            this.x0 = x0;
+            this.x1 = x1;
+        }
+
+        public void setX1(float x1) {
+            this.x1 = x1;
+        }
+
+        public @NotNull Badge getBadge() {
+            return this.badge;
+        }
+
+        public float getX0() {
+            return this.x0;
+        }
+
+        public float getX1() {
+            return this.x1;
         }
     }
 
