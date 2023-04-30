@@ -22,20 +22,17 @@ public abstract class StringSplitterMixin {
 
     private Badge prevBadge;
     private boolean isNotLineStart;
-    private boolean isPrevTextBold;
 
     @Inject(method = "stringWidth(Lnet/minecraft/util/FormattedCharSequence;)F", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/util/FormattedCharSequence;accept(Lnet/minecraft/util/FormattedCharSink;)Z"), locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
     private void appendGraphicWidth(FormattedCharSequence content, CallbackInfoReturnable<Float> cir, MutableFloat mutableFloat){
         this.prevBadge = null;
         this.isNotLineStart = false;
-        this.isPrevTextBold = false;
         content.accept((i, style, j) -> {
             mutableFloat.add(this.widthProvider.getWidth(j, style));
-            mutableFloat.add(Badge.renderOffset(this.prevBadge, style.getBadge(), this.isNotLineStart, this.isPrevTextBold));
+            mutableFloat.add(Badge.renderOffset(this.prevBadge, style.getBadge(), this.isNotLineStart));
             this.prevBadge = style.getBadge();
             this.isNotLineStart = true;
-            this.isPrevTextBold = style.isBold();
             return true;
         });
         cir.setReturnValue(mutableFloat.floatValue());

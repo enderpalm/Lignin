@@ -27,6 +27,6 @@ public abstract class BakedGlyphMixin implements BakedGlyphInjector {
 
     @ModifyArg(method = {"render", "renderEffect"}, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;vertex(Lorg/joml/Matrix4f;FFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"), index = 3)
     private float render(float x) {
-        return x + 0.01f;
+        return x + 0.02f;
     }
 }

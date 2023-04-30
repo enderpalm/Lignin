@@ -241,18 +241,17 @@ public class Badge {
     /**
      * Append render offset between text-badge (entering), badge-text (leaving) and badge-badge (different)
      *
-     * @param prev           previous {@link Badge}
-     * @param cur            current {@link Badge}
-     * @param notLineStart   check if the badge is at line start, decrease offset by 1 if false
-     * @param isPrevTextBold check if the previous text is bold, increase offset by 1 if true
+     * @param prev         previous {@link Badge}
+     * @param cur          current {@link Badge}
+     * @param notLineStart check if the badge is at line start, decrease offset by 1 if false
      * @return Offset amount
      */
-    public static int renderOffset(@Nullable Badge prev, @Nullable Badge cur, boolean notLineStart, boolean isPrevTextBold) {
-        var otherOffset = (notLineStart ? 1 : 0);
+    public static int renderOffset(@Nullable Badge prev, @Nullable Badge cur, boolean notLineStart) {
+        var lineOffset = notLineStart ? 1 : 0;
         if (prev != null && cur != null && !prev.equals(cur)) // different
-            return (BADGE_BORDER_SPACER << 1) + otherOffset;
+            return (BADGE_BORDER_SPACER << 1) + lineOffset;
         else if ((prev == null && cur != null) || (prev != null && cur == null)) // entering - leaving
-            return BADGE_BORDER_SPACER + otherOffset;
+            return BADGE_BORDER_SPACER + lineOffset;
         return 0;
     }
 
@@ -271,15 +270,15 @@ public class Badge {
         }
     }
 
-    public static class BadgeBuffer{
+    public static class BadgeBuffer {
         @NotNull private final Badge badge;
         private final float x0;
         private float x1;
 
-        public BadgeBuffer(@NotNull Badge badge, float x0, float x1) {
+        public BadgeBuffer(@NotNull Badge badge, float x0) {
             this.badge = badge;
             this.x0 = x0;
-            this.x1 = x1;
+            this.x1 = x0;
         }
 
         public void setX1(float x1) {
