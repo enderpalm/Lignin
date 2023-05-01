@@ -74,11 +74,9 @@ public abstract class StringRenderOutputMixin {
         if (!((BakedGlyphInjector) bakedGlyph).isInBadge() || this.dropShadow) return;
         assert style.getBadge() != null;
         var shadowColor = style.getBadge().getShadowColor();
-        var shadowDir = style.getBadge().getShadowDir();
-        if (shadowColor != null && shadowDir != null){
-            VertexConsumer vertexConsumer = this.bufferSource.getBuffer(bakedGlyph.renderType(this.mode));
-            var translation = shadowDir.getTranslation();
-            bakedGlyph.render(style.isItalic(), this.x + m + translation.x, this.y + translation.y, this.pose, vertexConsumer, FastColor.ARGB32.red(shadowColor) / 255.0f * this.r, FastColor.ARGB32.green(shadowColor) / 255.0f * this.g, FastColor.ARGB32.blue(shadowColor) / 255.0f * this.b ,FastColor.ARGB32.alpha(shadowColor) / 255.0f * this.a, this.packedLightCoords);
+        if (shadowColor != null){
+            VertexConsumer fakeConsumer = this.bufferSource.getBuffer(bakedGlyph.renderType(this.mode));
+            bakedGlyph.render(style.isItalic(), this.x + m + 1.0f, this.y, this.pose, fakeConsumer, FastColor.ARGB32.red(shadowColor) / 255.0f * this.r, FastColor.ARGB32.green(shadowColor) / 255.0f * this.g, FastColor.ARGB32.blue(shadowColor) / 255.0f * this.b ,FastColor.ARGB32.alpha(shadowColor) / 255.0f * this.a, this.packedLightCoords);
         }
     }
 

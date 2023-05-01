@@ -5,26 +5,21 @@ import com.google.gson.JsonSyntaxException;
 import dev.enderpalm.lignin.text.StringCollector;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ByIdMap;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3i;
 
 import java.util.Objects;
-import java.util.function.IntFunction;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class Badge {
 
     @Nullable private final Integer bg0;
     @Nullable private final Integer bg1;
-    @Nullable private final Integer cornerRadius;
+    @Nullable private final Boolean roundCorner;
     @Nullable private final Integer border0;
     @Nullable private final Integer border1;
     @Nullable private final Integer shadowColor;
-    @Nullable private final ShadowDir shadowDir;
     @Nullable private final ResourceLocation texture;
 
     /**
@@ -32,67 +27,54 @@ public class Badge {
      */
     public static final int BADGE_BORDER_SPACER = 2;
 
-    public Badge(@Nullable Integer bg0, @Nullable Integer bg1, @Nullable Integer cornerRadius, @Nullable Integer border0, @Nullable Integer border1, @Nullable Integer shadowColor, @Nullable ShadowDir shadowDir, @Nullable ResourceLocation texture) {
+    public Badge(@Nullable Integer bg0, @Nullable Integer bg1, @Nullable Boolean roundCorner, @Nullable Integer border0, @Nullable Integer border1, @Nullable Integer shadowColor, @Nullable ResourceLocation texture) {
         this.bg0 = bg0;
         this.bg1 = bg1;
-        this.cornerRadius = cornerRadius;
+        this.roundCorner = roundCorner;
         this.border0 = border0;
         this.border1 = border1;
         this.shadowColor = shadowColor;
-        this.shadowDir = shadowDir;
         this.texture = texture;
     }
 
     public Badge() {
-        this(null, null, null, null, null, null, null, null);
-    }
-
-    public Badge(@NotNull Badge src) {
-        this.bg0 = src.bg0;
-        this.bg1 = src.bg1;
-        this.cornerRadius = src.cornerRadius;
-        this.border0 = src.border0;
-        this.border1 = src.border1;
-        this.shadowColor = src.shadowColor;
-        this.shadowDir = src.shadowDir;
-        this.texture = src.texture;
+        this(null, null, null, null, null, null, null);
     }
 
     public Badge withBgColor(@Nullable Integer bgColor) {
         bgColor = ensureAlpha(bgColor);
         if (this.bg0 != null && this.bg1 != null) return this;
         if (this.bg0 == null)
-            return new Badge(bgColor, this.bg1, this.cornerRadius, this.border0, this.border1, this.shadowColor, this.shadowDir, this.texture);
-        return new Badge(this.bg0, bgColor, this.cornerRadius, this.border0, this.border1, this.shadowColor, this.shadowDir, this.texture);
+            return new Badge(bgColor, this.bg1, this.roundCorner, this.border0, this.border1, this.shadowColor, this.texture);
+        return new Badge(this.bg0, bgColor, this.roundCorner, this.border0, this.border1, this.shadowColor, this.texture);
     }
 
     public Badge withBgColor(@Nullable String bgColor) {
         return this.withBgColor(parseColor(bgColor));
     }
 
-    public Badge withCornerRadius(@Nullable Integer cornerRadius) {
-        return new Badge(this.bg0, this.bg1, cornerRadius, this.border0, this.border1, this.shadowColor, this.shadowDir, this.texture);
+    public Badge withRoundCorner(@Nullable Boolean roundCorner) {
+        return new Badge(this.bg0, this.bg1, roundCorner, this.border0, this.border1, this.shadowColor, this.texture);
     }
 
     public Badge withBorderColor(@Nullable Integer borderColor) {
         borderColor = ensureAlpha(borderColor);
         if (this.border0 != null && this.border1 != null) return this;
         if (this.border0 == null)
-            return new Badge(this.bg0, this.bg1, this.cornerRadius, borderColor, this.border1, this.shadowColor, this.shadowDir, this.texture);
-        return new Badge(this.bg0, this.bg1, this.cornerRadius, this.border0, borderColor, this.shadowColor, this.shadowDir, this.texture);
+            return new Badge(this.bg0, this.bg1, this.roundCorner, borderColor, this.border1, this.shadowColor, this.texture);
+        return new Badge(this.bg0, this.bg1, this.roundCorner, this.border0, borderColor, this.shadowColor, this.texture);
     }
 
     public Badge withBorderColor(@Nullable String borderColor) {
         return this.withBorderColor(parseColor(borderColor));
     }
 
-    public Badge withTextShadow(@Nullable Integer shadowColor, @Nullable ShadowDir shadowDir) {
-        if (shadowColor == null || shadowDir == null) return this;
-        return new Badge(this.bg0, this.bg1, this.cornerRadius, this.border0, this.border1, shadowColor, shadowDir, this.texture);
+    public Badge withShadowColor(@Nullable Integer shadowColor) {
+        return new Badge(this.bg0, this.bg1, this.roundCorner, this.border0, this.border1, shadowColor, this.texture);
     }
 
     public Badge withTexture(@Nullable ResourceLocation texture) {
-        return new Badge(this.bg0, this.bg1, this.cornerRadius, this.border0, this.border1, this.shadowColor, this.shadowDir, texture);
+        return new Badge(this.bg0, this.bg1, this.roundCorner, this.border0, this.border1, this.shadowColor, texture);
     }
 
     public ColorPair getBgColor() {
@@ -103,12 +85,8 @@ public class Badge {
         return new ColorPair(this.border0, this.border1);
     }
 
-    public @Nullable Integer getCornerRadius() {
-        return this.cornerRadius;
-    }
-
-    public @Nullable ShadowDir getShadowDir() {
-        return this.shadowDir;
+    public @Nullable Boolean hasRoundCorner() {
+        return this.roundCorner;
     }
 
     public @Nullable Integer getShadowColor() {
@@ -139,14 +117,7 @@ public class Badge {
     public Badge mergeFrom(@Nullable Badge src) {
         if (this.isEmpty()) return src;
         else if (src == null || src.isEmpty() || src.equals(this)) return this;
-        return new Badge()
-                .withBgColor(this.bg0 == null ? src.getBgColor().color0() : this.bg0)
-                .withBgColor(this.bg1 == null ? src.getBgColor().color1() : this.bg1)
-                .withCornerRadius(this.cornerRadius == null ? src.getCornerRadius() : this.cornerRadius)
-                .withBorderColor(this.border0 == null ? src.getBorderColor().color0() : this.border0)
-                .withBorderColor(this.border1 == null ? src.getBorderColor().color1() : this.border1)
-                .withTextShadow(this.shadowColor == null ? src.getShadowColor() : this.shadowColor, this.shadowDir == null ? this.getShadowDir() : this.shadowDir)
-                .withTexture(this.texture == null ? src.getTexture() : this.texture);
+        return new Badge(this.bg0 == null ? src.bg0 : this.bg0, this.bg1 == null ? src.bg1 : this.bg1, this.roundCorner == null ? src.roundCorner : this.roundCorner, this.border0 == null ? src.border0 : this.border0, this.border1 == null ? src.border1 : this.border1, this.shadowColor == null ? src.shadowColor : this.shadowColor, this.texture == null ? src.texture : this.texture);
     }
 
     @Override
@@ -154,16 +125,15 @@ public class Badge {
         if (!(obj instanceof Badge badge)) return false;
         return Objects.equals(this.bg0, badge.bg0)
                 && Objects.equals(this.bg1, badge.bg1)
-                && Objects.equals(this.cornerRadius, badge.cornerRadius)
+                && Objects.equals(this.roundCorner, badge.roundCorner)
                 && Objects.equals(this.border0, badge.border0)
                 && Objects.equals(this.border1, badge.border1)
                 && Objects.equals(this.shadowColor, badge.shadowColor)
-                && Objects.equals(this.shadowDir, badge.shadowDir)
                 && Objects.equals(this.texture, badge.texture);
     }
 
     public boolean isEmpty() {
-        return this.bg0 == null && this.bg1 == null && this.cornerRadius == null && this.border0 == null && this.border1 == null && this.shadowColor == null && this.shadowDir == null && this.texture == null;
+        return this.bg0 == null && this.bg1 == null && this.roundCorner == null && this.border0 == null && this.border1 == null && this.shadowColor == null && this.texture == null;
     }
 
     @Override
@@ -171,18 +141,12 @@ public class Badge {
         StringCollector collector = new StringCollector();
         collector.collect("bg0", this.bg0)
                 .collect("bg1", this.bg1)
-                .collect("cornerRadius", this.cornerRadius)
+                .collect("roundCorner", this.roundCorner)
                 .collect("border0", this.border0)
                 .collect("border1", this.border1)
                 .collect("shadowColor", this.shadowColor)
-                .collect("shadowDir", this.shadowDir)
                 .collect("texture", this.texture);
         return collector.terminate().toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.bg0, this.bg1, this.cornerRadius, this.border0, this.border1, this.shadowColor, this.shadowDir, this.texture);
     }
 
     public static JsonObject serialize(@Nullable Badge badge) {
@@ -190,11 +154,10 @@ public class Badge {
         if (badge != null) {
             if (badge.bg0 != null) json.addProperty("bg0", badge.bg0);
             if (badge.bg1 != null) json.addProperty("bg1", badge.bg1);
-            if (badge.cornerRadius != null) json.addProperty("cornerRadius", badge.cornerRadius);
+            if (badge.roundCorner != null) json.addProperty("roundCorner", badge.roundCorner);
             if (badge.border0 != null) json.addProperty("border0", badge.border0);
             if (badge.border1 != null) json.addProperty("border1", badge.border1);
             if (badge.shadowColor != null) json.addProperty("shadowColor", badge.shadowColor);
-            if (badge.shadowDir != null) json.addProperty("shadowDir", badge.shadowDir.getSerializedName());
             if (badge.texture != null) json.addProperty("texture", badge.texture.toString());
         }
         return json;
@@ -206,13 +169,12 @@ public class Badge {
             JsonObject obj = GsonHelper.getAsJsonObject(json, "badge");
             Integer bg0 = getColor(obj, "bg0");
             Integer bg1 = getColor(obj, "bg1");
-            Integer cornerRadius = obj.has("cornerRadius") ? GsonHelper.getAsInt(obj, "cornerRadius") : null;
+            Boolean roundCorner = obj.has("roundCorner") ? GsonHelper.getAsBoolean(obj, "roundCorner") : null;
             Integer border0 = getColor(obj, "border0");
             Integer border1 = getColor(obj, "border1");
             Integer shadowColor = getColor(obj, "shadowColor");
-            ShadowDir shadowDir = ShadowDir.getFromJson(obj, "shadowDir");
             ResourceLocation texture = getTexture(obj);
-            return new Badge(bg0, bg1, cornerRadius, border0, border1, shadowColor, shadowDir, texture);
+            return new Badge(bg0, bg1, roundCorner, border0, border1, shadowColor, texture);
         }
         return null;
     }
@@ -297,62 +259,6 @@ public class Badge {
 
         public float getX1() {
             return this.x1;
-        }
-    }
-
-    public enum ShadowDir implements StringRepresentable {
-
-        UP(0, "up", new Vector3i(0, -1, 0)),
-        UPPER_RIGHT(1, "upper_right", new Vector3i(1, -1, 0)),
-        RIGHT(2, "right", new Vector3i(1, 0, 0)),
-        LOWER_RIGHT(3, "lower_right", new Vector3i(1, 1, 0)),
-        DOWN(4, "down", new Vector3i(0, 1, 0)),
-        LOWER_LEFT(5, "lower_left", new Vector3i(-1, 1, 0)),
-        LEFT(6, "left", new Vector3i(-1, 0, 0)),
-        UPPER_LEFT(7, "upper_left", new Vector3i(-1, -1, 0));
-
-        private final byte id;
-        private final String name;
-        private final Vector3i translation;
-        private static final IntFunction<ShadowDir> BY_ID = ByIdMap.continuous(ShadowDir::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
-
-        ShadowDir(int id, String name, Vector3i translation) {
-            this.id = (byte) id;
-            this.name = name;
-            this.translation = translation;
-        }
-
-        public int getId() {
-            return this.id;
-        }
-
-        @Override
-        public @NotNull String getSerializedName() {
-            return this.name;
-        }
-
-        public @NotNull Vector3i getTranslation() {
-            return this.translation;
-        }
-
-        public static ShadowDir byId(int id) {
-            return BY_ID.apply(id);
-        }
-
-        private static @Nullable ShadowDir getFromJson(@NotNull JsonObject json, String key) {
-            if (json.has(key)) {
-                String name = GsonHelper.getAsString(json, key);
-                try {
-                    return ShadowDir.valueOf(name.toUpperCase());
-                } catch (JsonSyntaxException e) {
-                    try {
-                        return ShadowDir.byId(Integer.parseInt(name));
-                    } catch (JsonSyntaxException e2) {
-                        throw new JsonSyntaxException("Invalid badge shadow direction: " + name);
-                    }
-                }
-            }
-            return null;
         }
     }
 }
