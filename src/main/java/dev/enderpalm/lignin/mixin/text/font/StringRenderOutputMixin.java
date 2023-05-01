@@ -71,7 +71,15 @@ public abstract class StringRenderOutputMixin {
             target = "Lnet/minecraft/client/renderer/MultiBufferSource;getBuffer(Lnet/minecraft/client/renderer/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;",
             shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void renderBadgeContentShadow(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, FontSet fontSet, GlyphInfo glyphInfo, BakedGlyph bakedGlyph, boolean bl, float g, float h, float l, float f, TextColor textColor, float m, float n) {
-
+        if (!((BakedGlyphInjector) bakedGlyph).isInBadge() || this.dropShadow) return;
+        assert style.getBadge() != null;
+        var shadowColor = style.getBadge().getShadowColor();
+        var shadowDir = style.getBadge().getShadowDir();
+        if (shadowColor != null && shadowDir != null){
+            VertexConsumer vertexConsumer = this.bufferSource.getBuffer(bakedGlyph.renderType(this.mode));
+            var translation = shadowDir.getTranslation();
+            bakedGlyph.render(style.isItalic(), this.x + m + translation.x, this.y + translation.y, this.pose, vertexConsumer, FastColor.ARGB32.red(shadowColor) / 255.0f * this.r, FastColor.ARGB32.green(shadowColor) / 255.0f * this.g, FastColor.ARGB32.blue(shadowColor) / 255.0f * this.b ,FastColor.ARGB32.alpha(shadowColor) / 255.0f * this.a, this.packedLightCoords);
+        }
     }
 
     @Redirect(method = "accept", at = @At(value = "INVOKE",
