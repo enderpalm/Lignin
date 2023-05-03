@@ -11,6 +11,11 @@
     "sources": "https://github.com/enderpalm/Lignin",
     "issues": "https://github.com/enderpalm/Lignin/issues"
   },
+  "entrypoints": {
+    "main": [
+      "dev.enderpalm.lignin.Lignin"
+    ]
+  },
   "license": "MIT",
   "environment": "*",
   "accessWidener": "lignin.accesswidener",
