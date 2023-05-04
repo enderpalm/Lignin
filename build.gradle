@@ -3,11 +3,14 @@ plugins {
     id 'maven-publish'
 }
 
-version = project.mod_version
-group = project.maven_group
+version = project.mod_version + '+' + project.minecraft_version
+group = 'dev.enderpalm'
+archivesBaseName = 'lignin'
 
 repositories {
     maven { url = 'https://maven.parchmentmc.org' }
+    maven { url = "https://api.modrinth.com/maven" }
+    maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
     maven {
         url "https://maven.terraformersmc.com/releases/"
         content {
@@ -27,6 +30,9 @@ dependencies {
     modApi("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude group: "net.fabricmc", module: "fabric-loader"
     }
+    // Test dependencies
+    modLocalRuntime "maven.modrinth:lazydfu:${project.lazydfu_version}"
+    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${project.devauth_version}")
 }
 
 sourceSets {
@@ -90,15 +96,12 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    archivesBaseName = project.archives_base_name
     withSourcesJar()
     withJavadocJar()
 }
 
 jar {
-    from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
-    }
+    from "LICENSE"
 }
 
 publishing {

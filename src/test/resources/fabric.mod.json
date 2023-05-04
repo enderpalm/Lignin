@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
   "id": "lignin-mock",
-  "version": "1.0.0",
+  "version": "xxx",
   "name": "Lignin Mock",
-  "description": "Test implementation of Lignin used in dev environment",
+  "description": "Test implementation of Lignin Library used in dev environment",
   "authors": ["Enderpalm"],
   "contact": {},
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "client": ["dev.enderpalm.mock.MockClient"],
-    "main": ["dev.enderpalm.mock.MockCommon"]
+    "client": ["dev.enderpalm.mock.LigninMockClient"],
+    "main": ["dev.enderpalm.mock.LigninMockCommon"]
   },
   "mixins": ["lignin-mock.mixins.json"],
   "custom": {
