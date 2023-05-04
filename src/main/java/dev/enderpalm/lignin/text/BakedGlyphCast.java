@@ -5,12 +5,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Style;
 
 @Environment(EnvType.CLIENT)
-public interface BakedGlyphInjector {
+public interface BakedGlyphCast {
 
-    default void setInBadge(Style style){
+    default void setNotInBadge(Style style){
     }
 
-    default boolean isInBadge(){
-        return false;
+    default boolean isNotInBadge(){
+        return true;
     }
 }

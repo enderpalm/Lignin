@@ -2,7 +2,7 @@ package dev.enderpalm.lignin.mixin.text.font;
 
 import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.enderpalm.lignin.text.BakedGlyphInjector;
+import dev.enderpalm.lignin.text.BakedGlyphCast;
 import dev.enderpalm.lignin.text.container.Badge;
 import dev.enderpalm.lignin.text.render.BadgeRenderer;
 import net.fabricmc.api.EnvType;
@@ -52,7 +52,7 @@ public abstract class StringRenderOutputMixin {
             target = "Lnet/minecraft/network/chat/Style;isBold()Z", shift = At.Shift.BEFORE),
             locals = LocalCapture.CAPTURE_FAILSOFT)
     private void accept(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, FontSet fontSet, GlyphInfo glyphInfo, BakedGlyph bakedGlyph) {
-        ((BakedGlyphInjector) bakedGlyph).setInBadge(style);
+        ((BakedGlyphCast) bakedGlyph).setNotInBadge(style);
         Badge currentBadge = style.getBadge();
         var offset = Badge.renderOffset(this.prevBadge, currentBadge, this.isNotLineStart);
         this.x += offset;
@@ -71,7 +71,7 @@ public abstract class StringRenderOutputMixin {
             target = "Lnet/minecraft/client/renderer/MultiBufferSource;getBuffer(Lnet/minecraft/client/renderer/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;",
             shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void renderBadgeContentShadow(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, FontSet fontSet, GlyphInfo glyphInfo, BakedGlyph bakedGlyph, boolean bl, float g, float h, float l, float f, TextColor textColor, float m, float n) {
-        if (!((BakedGlyphInjector) bakedGlyph).isInBadge() || this.dropShadow) return;
+        if (((BakedGlyphCast) bakedGlyph).isNotInBadge() || this.dropShadow) return;
         assert style.getBadge() != null;
         var shadowColor = style.getBadge().getShadowColor();
         if (shadowColor != null){
@@ -83,7 +83,7 @@ public abstract class StringRenderOutputMixin {
     @Redirect(method = "accept", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/gui/Font;renderChar(Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;ZZFFFLorg/joml/Matrix4f;Lcom/mojang/blaze3d/vertex/VertexConsumer;FFFFI)V"))
     private void disableBadgeTextShadow(Font instance, BakedGlyph glyph, boolean bold, boolean italic, float boldOffset, float x, float y, Matrix4f matrix, VertexConsumer buffer, float red, float green, float blue, float alpha, int packedLight) {
-        if (!this.dropShadow || !((BakedGlyphInjector) glyph).isInBadge())
+        if (!this.dropShadow || ((BakedGlyphCast) glyph).isNotInBadge())
             instance.renderChar(glyph, bold, italic, boldOffset, x, y, matrix, buffer, red, green, blue, alpha, packedLight);
     }
 

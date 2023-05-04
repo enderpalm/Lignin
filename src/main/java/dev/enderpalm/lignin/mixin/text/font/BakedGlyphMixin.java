@@ -1,6 +1,6 @@
 package dev.enderpalm.lignin.mixin.text.font;
 
-import dev.enderpalm.lignin.text.BakedGlyphInjector;
+import dev.enderpalm.lignin.text.BakedGlyphCast;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
@@ -11,18 +11,18 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Environment(EnvType.CLIENT)
 @Mixin(BakedGlyph.class)
-public abstract class BakedGlyphMixin implements BakedGlyphInjector {
+public abstract class BakedGlyphMixin implements BakedGlyphCast {
 
-    private boolean isInBadge;
+    private boolean isNotInBadge;
 
     @Override
-    public void setInBadge(Style style) {
-        this.isInBadge = style != null && style.getBadge() != null;
+    public void setNotInBadge(Style style) {
+        this.isNotInBadge = style == null || style.getBadge() == null;
     }
 
     @Override
-    public boolean isInBadge() {
-        return this.isInBadge;
+    public boolean isNotInBadge() {
+        return this.isNotInBadge;
     }
 
     @ModifyArg(method = {"render", "renderEffect"}, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;vertex(Lorg/joml/Matrix4f;FFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"), index = 3)
