@@ -4,6 +4,7 @@ import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.enderpalm.lignin.text.BakedGlyphCast;
 import dev.enderpalm.lignin.text.container.Badge;
+import dev.enderpalm.lignin.text.container.FontVariant;
 import dev.enderpalm.lignin.text.render.BadgeRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -21,6 +22,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -44,9 +46,13 @@ public abstract class StringRenderOutputMixin {
     @Shadow @Final private Font.DisplayMode mode;
 
     @Nullable private Badge prevBadge;
-    private float x0;
     private boolean isNotLineStart;
     private ArrayList<Badge.BadgeBuffer> badgeBuffer = new ArrayList<>();
+
+    @ModifyVariable(method = "accept", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    private Style overrideStyle(Style style) {
+        return FontVariant.getSwitchedFont(style);
+    }
 
     @Inject(method = "accept", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/network/chat/Style;isBold()Z", shift = At.Shift.BEFORE),
@@ -57,10 +63,8 @@ public abstract class StringRenderOutputMixin {
         var offset = Badge.renderOffset(this.prevBadge, currentBadge, this.isNotLineStart);
         this.x += offset;
         if (currentBadge != null) {
-            if (offset != 0) {
-                this.x0 = this.x - Badge.BADGE_BORDER_SPACER;
-                this.badgeBuffer.add(new Badge.BadgeBuffer(currentBadge, this.x0));
-            }
+            if (offset != 0)
+                this.badgeBuffer.add(new Badge.BadgeBuffer(currentBadge, this.x - Badge.BADGE_BORDER_SPACER));
             this.badgeBuffer.get(this.badgeBuffer.size() - 1).setX1(this.x + (style.isBold() ? 1 : 0));
         }
         this.isNotLineStart = true;
@@ -74,9 +78,9 @@ public abstract class StringRenderOutputMixin {
         if (((BakedGlyphCast) bakedGlyph).isNotInBadge() || this.dropShadow) return;
         assert style.getBadge() != null;
         var shadowColor = style.getBadge().getShadowColor();
-        if (shadowColor != null){
+        if (shadowColor != null) {
             VertexConsumer fakeConsumer = this.bufferSource.getBuffer(bakedGlyph.renderType(this.mode));
-            bakedGlyph.render(style.isItalic(), this.x + m + 1.0f, this.y, this.pose, fakeConsumer, FastColor.ARGB32.red(shadowColor) / 255.0f * this.r, FastColor.ARGB32.green(shadowColor) / 255.0f * this.g, FastColor.ARGB32.blue(shadowColor) / 255.0f * this.b ,FastColor.ARGB32.alpha(shadowColor) / 255.0f * this.a, this.packedLightCoords);
+            bakedGlyph.render(style.isItalic(), this.x + m + 1.0f, this.y, this.pose, fakeConsumer, FastColor.ARGB32.red(shadowColor) / 255.0f * this.r, FastColor.ARGB32.green(shadowColor) / 255.0f * this.g, FastColor.ARGB32.blue(shadowColor) / 255.0f * this.b, FastColor.ARGB32.alpha(shadowColor) / 255.0f * this.a, this.packedLightCoords);
         }
     }
 

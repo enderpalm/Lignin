@@ -1,40 +1,43 @@
 package dev.enderpalm.lignin.mixin.text.font;
 
 import dev.enderpalm.lignin.text.container.Badge;
+import dev.enderpalm.lignin.text.container.FontVariant;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.StringSplitter;
-import net.minecraft.util.FormattedCharSequence;
-import org.apache.commons.lang3.mutable.MutableFloat;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.network.chat.Style;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Environment(EnvType.CLIENT)
 @Mixin(StringSplitter.class)
 public abstract class StringSplitterMixin {
 
-    @Shadow @Final StringSplitter.WidthProvider widthProvider;
-
     private Badge prevBadge;
     private boolean isNotLineStart;
 
-    @Inject(method = "stringWidth(Lnet/minecraft/util/FormattedCharSequence;)F", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/util/FormattedCharSequence;accept(Lnet/minecraft/util/FormattedCharSink;)Z"), locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
-    private void appendGraphicWidth(FormattedCharSequence content, CallbackInfoReturnable<Float> cir, MutableFloat mutableFloat){
-        this.prevBadge = null;
-        this.isNotLineStart = false;
-        content.accept((i, style, j) -> {
-            mutableFloat.add(this.widthProvider.getWidth(j, style));
-            mutableFloat.add(Badge.renderOffset(this.prevBadge, style.getBadge(), this.isNotLineStart));
-            this.prevBadge = style.getBadge();
-            this.isNotLineStart = true;
-            return true;
-        });
-        cir.setReturnValue(mutableFloat.floatValue());
+    @Redirect(method = "method_27496", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/StringSplitter$WidthProvider;getWidth(ILnet/minecraft/network/chat/Style;)F"))
+    private float appendStringWidth(StringSplitter.WidthProvider instance, int i, Style style){
+        return this.getModifiedGlyphWidth(instance, i, style);
+    }
+
+    @Redirect(method = "method_27492", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/StringSplitter$WidthProvider;getWidth(ILnet/minecraft/network/chat/Style;)F"))
+    private float appendFormattedTextWidth(StringSplitter.WidthProvider instance, int i, Style style) {
+        return this.getModifiedGlyphWidth(instance, i, style);
+    }
+
+    @Redirect(method = "method_30879", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/StringSplitter$WidthProvider;getWidth(ILnet/minecraft/network/chat/Style;)F"))
+    private float appendFormattedCharSequenceWidth(StringSplitter.WidthProvider instance, int i, Style style){
+        return this.getModifiedGlyphWidth(instance, i, style);
+    }
+
+    private float getModifiedGlyphWidth(StringSplitter.WidthProvider instance, int codePoint, @NotNull Style style){
+        style = FontVariant.getSwitchedFont(style);
+        float glyphWidth = instance.getWidth(codePoint, style) + Badge.renderOffset(this.prevBadge, style.getBadge(), this.isNotLineStart);
+        this.prevBadge = style.getBadge();
+        this.isNotLineStart = true;
+        return glyphWidth;
     }
 }
