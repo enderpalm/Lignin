@@ -2,15 +2,14 @@ package dev.enderpalm.lignin.text;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Style;
 
 @Environment(EnvType.CLIENT)
-public interface BakedGlyphCast {
+public interface BakedGlyphAccessor {
 
-    default void setNotInBadge(Style style){
+    default void setRenderOffsetMode(int flag){
     }
 
     default boolean isNotInBadge(){
-        return true;
+        return false;
     }
 }
