@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 public class LigninMockClient implements ClientModInitializer {
 
     @Override
-    public void onInitializeClient() {
+    public void onInitializeClient(){
 
     }
 }

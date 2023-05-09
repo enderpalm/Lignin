@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "lignin-mock",
-  "version": "xxx",
+  "version": "1.0",
   "name": "Lignin Mock",
   "description": "Test implementation of Lignin Library used in dev environment",
   "authors": ["Enderpalm"],
