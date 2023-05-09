@@ -3,7 +3,7 @@
   "id": "lignin",
   "version": "${version}",
   "name": "Lignin",
-  "description": "Library for in-game Graphics and Interaction",
+  "description": "Minecraft pixel art & UI rendering toolkit",
   "authors": [
     "Enderpalm"
   ],
@@ -11,7 +11,12 @@
     "sources": "https://github.com/enderpalm/Lignin",
     "issues": "https://github.com/enderpalm/Lignin/issues"
   },
-  "license": "MIT",
+  "entrypoints": {
+    "main": [
+      "dev.enderpalm.lignin.Lignin"
+    ]
+  },
+  "license": "GNU LPGL-3.0",
   "environment": "*",
   "accessWidener": "lignin.accesswidener",
   "mixins": ["lignin.mixins.json"],
@@ -22,6 +27,9 @@
   "custom": {
     "modmenu": {
       "badges": ["library"]
+    },
+    "loom:injected_interfaces": {
+      "net/minecraft/class_2583": ["dev/enderpalm/lignin/text/StyleInjector"]
     }
   }
 }

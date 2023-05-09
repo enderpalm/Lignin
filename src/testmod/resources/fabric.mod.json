@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "lignin-testmod",
+  "version": "1.0",
+  "name": "Lignin TestMod",
+  "description": "Test mod to evaluate Lignin Library functionality.",
+  "authors": ["Enderpalm"],
+  "contact": {},
+  "license": "GNU LPGL-3.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.enderpalm.lignin.test.ReferenceTest"
+    ]
+  },
+  "custom": {
+    "modmenu": {
+      "parent": "lignin"
+    }
+  }
+}

@@ -3,11 +3,14 @@ plugins {
     id 'maven-publish'
 }
 
-version = project.mod_version
-group = project.maven_group
+version = project.mod_version + '+' + project.minecraft_version
+group = 'dev.enderpalm'
+archivesBaseName = 'lignin'
 
 repositories {
     maven { url = 'https://maven.parchmentmc.org' }
+    maven { url = "https://api.modrinth.com/maven" }
+    maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
     maven {
         url "https://maven.terraformersmc.com/releases/"
         content {
@@ -17,6 +20,13 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    testmod {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.layered() {
@@ -24,16 +34,14 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
     }
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // Dev dependencies
+    modRuntimeOnly "me.djtheredstoner:DevAuth-fabric:${project.devauth_version}"
+    modLocalRuntime "maven.modrinth:lazydfu:${project.lazydfu_version}"
     modApi("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude group: "net.fabricmc", module: "fabric-loader"
     }
-}
-
-sourceSets {
-    test {
-        compileClasspath += main.output
-        runtimeClasspath += main.output
-    }
+    testmodImplementation sourceSets.main.output
 }
 
 loom {
@@ -41,20 +49,36 @@ loom {
     runs {
         mockClient {
             client()
-            name = "Minecraft Client :Mock"
-            source sourceSets.test
+            name = "Minecraft Client :Testmod"
+            source sourceSets.testmod
         }
 
         mockServer {
             server()
-            name = "Minecraft Server :Mock"
-            source sourceSets.test
+            name = "Minecraft Server :Testmod"
+            source sourceSets.testmod
         }
     }
     runConfigs.configureEach {
-        ideConfigGenerated project.rootProject == project
+        ideConfigGenerated true
         property "mixin.hotswap", "true"
         property "mixin.debug.export", "true"
+    }
+
+    mixin {
+        defaultRefmapName = 'lignin.refmap.json'
+    }
+}
+
+afterEvaluate {
+    loom {
+        runs {
+            configureEach {
+                // Add mixin agent to all run configs for hotswapping
+                def mixinJarFile = configurations.compileClasspath.files { it.group == "net.fabricmc" && it.name == "sponge-mixin" }.first()
+                vmArg("-javaagent:$mixinJarFile")
+            }
+        }
     }
 }
 
@@ -79,20 +103,23 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+if (JavaVersion.current().isJava8Compatible()) {
+    tasks.withType(Javadoc).configureEach {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    archivesBaseName = project.archives_base_name
     withSourcesJar()
     withJavadocJar()
 }
 
 jar {
-    from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
-    }
+    from "LICENSE.md"
 }
 
 publishing {

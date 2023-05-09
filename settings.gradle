@@ -9,4 +9,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = "Lignin"
+rootProject.name = 'Lignin'
+
