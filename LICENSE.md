@@ -1,12 +1,12 @@
-<div style="text-align: center;">
-<h2>GNU Lesser General Public License</h2>
+GNU Lesser General Public License
+=================================
 
 _Version 3, 29 June 2007_  
 _Copyright © 2007 Free Software Foundation, Inc. &lt;<http://fsf.org/>&gt;_
 
-</div>
 Everyone is permitted to copy and distribute verbatim copies
 of this license document, but changing it is not allowed.
+
 
 This version of the GNU Lesser General Public License incorporates
 the terms and conditions of version 3 of the GNU General Public
