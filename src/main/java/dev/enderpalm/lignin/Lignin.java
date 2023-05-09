@@ -2,7 +2,6 @@ package dev.enderpalm.lignin;
 
 import dev.enderpalm.lignin.util.Reference;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientBlockEntityEvents;
 import org.slf4j.Logger;
 
 public class Lignin implements ModInitializer {

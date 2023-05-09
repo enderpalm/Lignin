@@ -21,7 +21,7 @@ repositories {
 }
 
 sourceSets {
-    mock {
+    testmod {
         compileClasspath += main.compileClasspath
         runtimeClasspath += main.runtimeClasspath
     }
@@ -41,7 +41,7 @@ dependencies {
     modApi("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude group: "net.fabricmc", module: "fabric-loader"
     }
-    mockImplementation sourceSets.main.output
+    testmodImplementation sourceSets.main.output
 }
 
 loom {
@@ -49,14 +49,14 @@ loom {
     runs {
         mockClient {
             client()
-            name = "Minecraft Client :Mock"
-            source sourceSets.mock
+            name = "Minecraft Client :Testmod"
+            source sourceSets.testmod
         }
 
         mockServer {
             server()
-            name = "Minecraft Server :Mock"
-            source sourceSets.mock
+            name = "Minecraft Server :Testmod"
+            source sourceSets.testmod
         }
     }
     runConfigs.configureEach {
@@ -119,7 +119,7 @@ java {
 }
 
 jar {
-    from "LICENSE"
+    from "LICENSE.md"
 }
 
 publishing {
