@@ -20,6 +20,13 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    testmod {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.layered() {
@@ -27,19 +34,14 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
     }
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // Dev dependencies
+    modRuntimeOnly "me.djtheredstoner:DevAuth-fabric:${project.devauth_version}"
+    modLocalRuntime "maven.modrinth:lazydfu:${project.lazydfu_version}"
     modApi("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude group: "net.fabricmc", module: "fabric-loader"
     }
-    // Test dependencies
-    modLocalRuntime "maven.modrinth:lazydfu:${project.lazydfu_version}"
-    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${project.devauth_version}")
-}
-
-sourceSets {
-    test {
-        compileClasspath += main.output
-        runtimeClasspath += main.output
-    }
+    testmodImplementation sourceSets.main.output
 }
 
 loom {
@@ -47,20 +49,36 @@ loom {
     runs {
         mockClient {
             client()
-            name = "Minecraft Client :Mock"
-            source sourceSets.test
+            name = "Minecraft Client :Testmod"
+            source sourceSets.testmod
         }
 
         mockServer {
             server()
-            name = "Minecraft Server :Mock"
-            source sourceSets.test
+            name = "Minecraft Server :Testmod"
+            source sourceSets.testmod
         }
     }
     runConfigs.configureEach {
-        ideConfigGenerated project.rootProject == project
+        ideConfigGenerated true
         property "mixin.hotswap", "true"
         property "mixin.debug.export", "true"
+    }
+
+    mixin {
+        defaultRefmapName = 'lignin.refmap.json'
+    }
+}
+
+afterEvaluate {
+    loom {
+        runs {
+            configureEach {
+                // Add mixin agent to all run configs for hotswapping
+                def mixinJarFile = configurations.compileClasspath.files { it.group == "net.fabricmc" && it.name == "sponge-mixin" }.first()
+                vmArg("-javaagent:$mixinJarFile")
+            }
+        }
     }
 }
 
@@ -101,7 +119,7 @@ java {
 }
 
 jar {
-    from "LICENSE"
+    from "LICENSE.md"
 }
 
 publishing {

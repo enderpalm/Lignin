@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.enderpalm.lignin.text.BakedGlyphAccessor;
 import dev.enderpalm.lignin.text.container.Badge;
-import dev.enderpalm.lignin.text.container.FontVariant;
+import dev.enderpalm.lignin.text.FontEmphases;
 import dev.enderpalm.lignin.text.render.BadgeRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,14 +18,11 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.FastColor;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -47,13 +44,16 @@ public abstract class StringRenderOutputMixin {
     @Shadow @Final private boolean dropShadow;
     @Shadow @Final private Font.DisplayMode mode;
 
+    @Shadow protected abstract void addEffect(BakedGlyph.Effect effect);
+
+    @Unique
     @Nullable private Badge prevBadge;
     private boolean isNotLineStart;
     private ArrayList<Badge.BadgeBuffer> badgeBuffer = new ArrayList<>();
 
     @ModifyVariable(method = "accept", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private Style overrideStyle(Style style) {
-        return FontVariant.getSwitchedFont(style);
+        return FontEmphases.getSwitchedFont(style);
     }
 
     @Inject(method = "accept", at = @At(value = "INVOKE",
@@ -98,6 +98,25 @@ public abstract class StringRenderOutputMixin {
         if (!this.dropShadow || isNotInBadge) {
             if (!isNotInBadge) ((BakedGlyphAccessor) glyph).setRenderOffsetMode(1);
             instance.renderChar(glyph, bold, italic, boldOffset, x, y, matrix, buffer, red, green, blue, alpha, packedLight);
+        }
+    }
+
+    @Redirect(method = "accept", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font$StringRenderOutput;addEffect(Lnet/minecraft/client/gui/font/glyphs/BakedGlyph$Effect;)V"))
+    private void disableVanillaEffectAdder(Font.StringRenderOutput instance, BakedGlyph.Effect effect){}
+
+    @Inject(method = "accept", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/network/chat/Style;isStrikethrough()Z"),
+            locals = LocalCapture.CAPTURE_FAILHARD)
+    private void reImplementAddEffect(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, FontSet fontSet, GlyphInfo glyphInfo, BakedGlyph bakedGlyph, boolean bl, float g, float h, float l, float f, TextColor textColor, float m, float n){
+        if (!this.dropShadow || ((BakedGlyphAccessor) bakedGlyph).isNotInBadge()) {
+            if (style.isStrikethrough()) {
+                var offset = FontEmphases.getShiftedEffect(style, false);
+                this.addEffect(new BakedGlyph.Effect(this.x + n - offset.thickness(), this.y + n + offset.shift(), this.x + n + m, this.y + n + offset.shift() - offset.thickness(), 0.01F, g, h, l, f));
+            }
+            if (style.isUnderlined()) {
+                var offset  = FontEmphases.getShiftedEffect(style, true);
+                this.addEffect(new BakedGlyph.Effect(this.x + n - offset.thickness(), this.y + n + offset.shift(), this.x + n + m, this.y + n + offset.shift() - offset.thickness(), 0.01F, g, h, l, f));
+            }
         }
     }
 

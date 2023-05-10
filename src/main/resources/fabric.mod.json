@@ -3,7 +3,7 @@
   "id": "lignin",
   "version": "${version}",
   "name": "Lignin",
-  "description": "Library for in-game Graphics and Interaction",
+  "description": "Minecraft pixel art & UI rendering toolkit",
   "authors": [
     "Enderpalm"
   ],
@@ -16,7 +16,7 @@
       "dev.enderpalm.lignin.Lignin"
     ]
   },
-  "license": "MIT",
+  "license": "GNU LPGL-3.0",
   "environment": "*",
   "accessWidener": "lignin.accesswidener",
   "mixins": ["lignin.mixins.json"],

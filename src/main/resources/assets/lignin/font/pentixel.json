@@ -12,7 +12,15 @@
       "file": "lignin:font/pentixel.png",
       "ascent": 7,
       "height": 8,
-      "bold": "lignin:pentixel_bold",
+      "emphases": {
+        "bold": "lignin:pentixel_bold",
+        "strikethrough": {
+          "shift": 4.5
+        },
+        "underlined": {
+          "shift": 8.0
+        }
+      },
       "chars": [
         "\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027\u0028\u0029\u002a\u002b\u002c\u002d\u002e\u002f",
         "\u0030\u0031\u0032\u0033\u0034\u0035\u0036\u0037\u0038\u0039\u003a\u003b\u003c\u003d\u003e\u003f",
