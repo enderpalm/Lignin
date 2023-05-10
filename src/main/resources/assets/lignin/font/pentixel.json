@@ -13,7 +13,13 @@
       "ascent": 7,
       "height": 8,
       "emphases": {
-        "bold": "lignin:pentixel_bold"
+        "bold": "lignin:pentixel_bold",
+        "strikethrough": {
+          "shift": 4.5
+        },
+        "underlined": {
+          "shift": 8.0
+        }
       },
       "chars": [
         "\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027\u0028\u0029\u002a\u002b\u002c\u002d\u002e\u002f",

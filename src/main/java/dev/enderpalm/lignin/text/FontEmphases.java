@@ -30,6 +30,18 @@ public final class FontEmphases {
         return original;
     }
 
+    public static @NotNull EffectOffset getShiftedEffect(@NotNull Style original, boolean isUnderlined) {
+        var originalFont = original.getFont();
+        if (EMPHASES_MAP.containsKey(originalFont)){
+            var emphases = EMPHASES_MAP.get(originalFont);
+            if (emphases.strikethrough != null && !isUnderlined)
+                return emphases.strikethrough;
+            if (emphases.underlined != null && isUnderlined)
+                return emphases.underlined;
+        }
+        return new EffectOffset(isUnderlined ? 9.0f : 4.5f, 1.0f);
+    }
+
     public static @Nullable ResourceLocation deserializeLocation(@NotNull JsonObject json, @NotNull String key) {
         if (!json.has(key)) return null;
         var location = GsonHelper.getAsString(json, key);
@@ -42,7 +54,7 @@ public final class FontEmphases {
     public static @Nullable EffectOffset deserializeEffectOffset(@NotNull JsonObject json, @NotNull String key) {
         if (!json.has(key)) return null;
         var obj = GsonHelper.getAsJsonObject(json, key);
-        var shift = GsonHelper.getAsFloat(obj, "shift", 4.5f);
+        var shift = GsonHelper.getAsFloat(obj, "shift", key.equals("underlined") ? 9.0f : 4.5f);
         var thickness = GsonHelper.getAsFloat(obj, "thickness", 1.0f);
         return new EffectOffset(shift, thickness);
     }
