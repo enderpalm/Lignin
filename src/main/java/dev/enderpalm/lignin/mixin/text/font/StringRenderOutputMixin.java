@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.enderpalm.lignin.text.BakedGlyphAccessor;
 import dev.enderpalm.lignin.text.container.Badge;
-import dev.enderpalm.lignin.text.container.FontVariant;
+import dev.enderpalm.lignin.text.FontEmphases;
 import dev.enderpalm.lignin.text.render.BadgeRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,7 +18,6 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.FastColor;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -53,7 +52,7 @@ public abstract class StringRenderOutputMixin {
 
     @ModifyVariable(method = "accept", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private Style overrideStyle(Style style) {
-        return FontVariant.getSwitchedFont(style);
+        return FontEmphases.getSwitchedFont(style);
     }
 
     @Inject(method = "accept", at = @At(value = "INVOKE",
