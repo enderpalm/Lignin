@@ -2,7 +2,7 @@ package dev.enderpalm.lignin.text.container;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import dev.enderpalm.lignin.text.StringCollector;
+import dev.enderpalm.lignin.util.StringCollector;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;

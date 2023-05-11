@@ -1,4 +1,4 @@
-package dev.enderpalm.lignin.text;
+package dev.enderpalm.lignin.util;
 
 import org.jetbrains.annotations.Nullable;
 
