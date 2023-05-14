@@ -4,4 +4,7 @@ accessible method net/minecraft/network/chat/Style <init> (Lnet/minecraft/networ
 accessible method net/minecraft/client/gui/Font renderChar (Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;ZZFFFLorg/joml/Matrix4f;Lcom/mojang/blaze3d/vertex/VertexConsumer;FFFFI)V
 accessible method net/minecraft/client/gui/Font getFontSet (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/gui/font/FontSet;
 
+accessible field net/minecraft/client/gui/Font filterFishyGlyphs Z
+
 accessible class net/minecraft/client/gui/Font$StringRenderOutput
+

@@ -10,6 +10,7 @@
   "client": [
     "text.EntityRendererMixin",
     "text.font.BakedGlyphMixin",
+    "text.font.FontMixin",
     "text.font.StringRenderOutputMixin",
     "text.font.StringSplitterMixin",
     "text.font.provider.BitmapProviderBuilderMixin",
