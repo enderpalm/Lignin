@@ -76,14 +76,15 @@ public abstract class StringRenderOutputMixin {
             target = "Lnet/minecraft/client/gui/Font;renderChar(Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;ZZFFFLorg/joml/Matrix4f;Lcom/mojang/blaze3d/vertex/VertexConsumer;FFFFI)V"),
             locals = LocalCapture.CAPTURE_FAILSOFT)
     private void renderBadgeShadowOrOutline(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, FontSet fontSet, GlyphInfo glyphInfo, BakedGlyph bakedGlyph, boolean bl, float g, float h, float l, float f, TextColor textColor, float m, float n, VertexConsumer vertexConsumer) {// prefer 1-3-4-5
-        var isInBadge = style.getBadge() != null;
-        var isBadgeShadow = isInBadge && style.getBadge().shadowColor() != null;
-        var foregroundMode = isInBadge ? 2 : 0;
-        if (!this.dropShadow && isInBadge && this.mode != Font.DisplayMode.SEE_THROUGH) {
-            ((BakedGlyphAccessor) bakedGlyph).setRenderMode(isBadgeShadow ? 3 : 2);
+        var curBadge = style.getBadge();
+        var isInBadge = curBadge != null;
+        var bgRenderMode = ((isInBadge && (curBadge.shadowColor() != null || curBadge.isAuto(2))) ? 4 : 2);
+        bgRenderMode += (style.getOutline() != null) ? 1 : 0;
+        if (!this.dropShadow && isInBadge && this.mode != Font.DisplayMode.SEE_THROUGH && bgRenderMode != 2) {
+            ((BakedGlyphAccessor) bakedGlyph).setRenderMode(bgRenderMode);
             bakedGlyph.render(bl, this.x + n, this.y + n, this.pose, vertexConsumer, 0.2f, 0.5f, 0.6f, f, this.packedLightCoords);
         }
-        ((BakedGlyphAccessor) bakedGlyph).setRenderMode(foregroundMode);
+        ((BakedGlyphAccessor) bakedGlyph).setRenderMode(isInBadge ? 2 : 0);
     }
 
     @Redirect(method = "accept", at = @At(value = "INVOKE",

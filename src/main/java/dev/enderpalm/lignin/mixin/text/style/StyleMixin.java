@@ -2,6 +2,7 @@ package dev.enderpalm.lignin.mixin.text.style;
 
 import dev.enderpalm.lignin.text.StyleInjector;
 import dev.enderpalm.lignin.text.container.Badge;
+import dev.enderpalm.lignin.util.color.OpaqueRGB;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
@@ -36,18 +37,13 @@ public abstract class StyleMixin implements StyleInjector{
     @Shadow @Final @Nullable ResourceLocation font;
 
     @Nullable private Badge badge;
-    @Nullable private TextColor outline;
+    @Nullable private OpaqueRGB outline;
 
     @Override
     public Style withBadge(@Nullable Badge badge) {
         var obj = new Style(this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font);
-        obj.innerSetBadge(badge);
+        obj.innerBindPropertiesToStyle(badge, this.outline);
         return obj;
-    }
-
-    @Override
-    public void innerSetBadge(@Nullable Badge badge) {
-        this.badge = badge;
     }
 
     @Override
@@ -56,19 +52,20 @@ public abstract class StyleMixin implements StyleInjector{
     }
 
     @Override
-    public Style withOutline(@Nullable TextColor outline) {
+    public Style withOutline(@Nullable OpaqueRGB outline) {
         var obj = new Style(this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font);
-        obj.innerSetOutline(outline);
+        obj.innerBindPropertiesToStyle(this.badge, outline);
         return obj;
     }
 
     @Override
-    public @Nullable TextColor getOutline() {
+    public @Nullable OpaqueRGB getOutline() {
         return this.outline;
     }
 
     @Override
-    public void innerSetOutline(@Nullable TextColor outline) {
+    public void innerBindPropertiesToStyle(@Nullable Badge badge, @Nullable OpaqueRGB outline) {
+        this.badge = badge;
         this.outline = outline;
     }
 

@@ -2,8 +2,8 @@ package dev.enderpalm.lignin.text;
 
 import dev.enderpalm.lignin.mixin.text.style.StyleMixin;
 import dev.enderpalm.lignin.text.container.Badge;
+import dev.enderpalm.lignin.util.color.OpaqueRGB;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,29 +17,20 @@ public interface StyleInjector {
         return null;
     }
 
-    /**
-     * <rawB>For internal use only!</rawB>, used by {@link StyleMixin} <br>
-     * Used to set badge to newly created {@link Style} instance. <br>
-     * @param badge instance of {@link Badge} to set
-     */
-    @ApiStatus.Internal
-    default void innerSetBadge(@Nullable Badge badge) {
-    }
-
-    default Style withOutline(@Nullable TextColor outline) {
+    default Style withOutline(@Nullable OpaqueRGB outline) {
         return (Style) this;
     }
 
-    default @Nullable TextColor getOutline() {
+    default @Nullable OpaqueRGB getOutline() {
         return null;
     }
 
     /**
      * <rawB>For internal use only!</rawB>, used by {@link StyleMixin} <br>
      * Used to set badge to newly created {@link Style} instance. <br>
-     * @param outline instance of {@link TextColor} to set
+     * @param badge instance of badge to set
+     * @param outline instance of outline to set
      */
     @ApiStatus.Internal
-    default void innerSetOutline(@Nullable TextColor outline) {
-    }
+    default void innerBindPropertiesToStyle(@Nullable Badge badge, @Nullable OpaqueRGB outline){}
 }
