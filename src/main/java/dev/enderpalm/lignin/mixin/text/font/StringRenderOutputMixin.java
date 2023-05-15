@@ -15,7 +15,6 @@ import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.util.FastColor;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
@@ -34,9 +33,6 @@ public abstract class StringRenderOutputMixin {
 
     @Shadow float x;
     @Shadow float y;
-    @Shadow @Final private float r;
-    @Shadow @Final private float g;
-    @Shadow @Final private float b;
     @Shadow @Final private float a;
     @Shadow @Final private Matrix4f pose;
     @Shadow @Final MultiBufferSource bufferSource;
@@ -63,11 +59,11 @@ public abstract class StringRenderOutputMixin {
             locals = LocalCapture.CAPTURE_FAILSOFT)
     private void appendBadgeOffset(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, FontSet fontSet, GlyphInfo glyphInfo, BakedGlyph bakedGlyph) {
         Badge currentBadge = style.getBadge();
-        var offset = Badge.renderOffset(this.prevBadge, currentBadge, this.isNotLineStart);
+        var offset = BadgeRenderer.renderOffset(this.prevBadge, currentBadge, this.isNotLineStart);
         this.x += offset;
         if (currentBadge != null) {
             if (offset != 0)
-                this.badgeBuffer.add(new Badge.BadgeBuffer(currentBadge, this.x - Badge.BADGE_BORDER_SPACER));
+                this.badgeBuffer.add(new Badge.BadgeBuffer(currentBadge, this.x - BadgeRenderer.BADGE_BORDER_SPACER));
             this.badgeBuffer.get(this.badgeBuffer.size() - 1).setX1(this.x + (style.isBold() ? 1 : 0));
         }
         this.isNotLineStart = true;
@@ -81,7 +77,7 @@ public abstract class StringRenderOutputMixin {
             locals = LocalCapture.CAPTURE_FAILSOFT)
     private void renderBadgeShadowOrOutline(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, FontSet fontSet, GlyphInfo glyphInfo, BakedGlyph bakedGlyph, boolean bl, float g, float h, float l, float f, TextColor textColor, float m, float n, VertexConsumer vertexConsumer) {// prefer 1-3-4-5
         var isInBadge = style.getBadge() != null;
-        var isBadgeShadow = isInBadge && style.getBadge().getShadowColor() != null;
+        var isBadgeShadow = isInBadge && style.getBadge().shadowColor() != null;
         var foregroundMode = isInBadge ? 2 : 0;
         if (!this.dropShadow && isInBadge && this.mode != Font.DisplayMode.SEE_THROUGH) {
             ((BakedGlyphAccessor) bakedGlyph).setRenderMode(isBadgeShadow ? 3 : 2);
@@ -123,13 +119,10 @@ public abstract class StringRenderOutputMixin {
     @Inject(method = "finish", at = @At("HEAD"))
     private void invokeBadgeRenderer(int backgroundColor, float x, CallbackInfoReturnable<Float> cir) {
         var depth = 0.0f;
-        var brightFactor = (this.dropShadow ? 1.5f : 1.0f) * 255;
+        var badgeDimFactor = this.dropShadow ? 0.45f : 1.0f;
         var shadowOffset = this.dropShadow ? 1.0f : 0.0f;
-        int redTint = this.dropShadow ? (int) (this.r * brightFactor) : 255;
-        int greenTint = this.dropShadow ? (int) (this.g * brightFactor) : 255;
-        int blueTint = this.dropShadow ? (int) (this.b * brightFactor) : 255;
         for (var buffer : this.badgeBuffer)
-            BadgeRenderer.render(buffer.getBadge(), buffer.getX0() + shadowOffset, buffer.getX1() + (Badge.BADGE_BORDER_SPACER << 2) - 1 + shadowOffset, this.y - 1 + shadowOffset, this.y + 8 + shadowOffset, depth, FastColor.ARGB32.color((int) (this.a * 255), redTint, greenTint, blueTint), this.pose, this.bufferSource, this.mode, this.packedLightCoords);
+            BadgeRenderer.render(buffer.getBadge(), buffer.getX0() + shadowOffset, buffer.getX1() + (BadgeRenderer.BADGE_BORDER_SPACER << 2) - 1 + shadowOffset, this.y - 1 + shadowOffset, this.y + 8 + shadowOffset, depth, this.a, badgeDimFactor, this.pose, this.bufferSource, this.mode, this.packedLightCoords);
         this.badgeBuffer = null;
         RenderSystem.disablePolygonOffset();
     }

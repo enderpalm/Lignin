@@ -36,6 +36,7 @@ public abstract class StyleMixin implements StyleInjector{
     @Shadow @Final @Nullable ResourceLocation font;
 
     @Nullable private Badge badge;
+    @Nullable private TextColor outline;
 
     @Override
     public Style withBadge(@Nullable Badge badge) {
@@ -54,15 +55,33 @@ public abstract class StyleMixin implements StyleInjector{
         return this.badge;
     }
 
+    @Override
+    public Style withOutline(@Nullable TextColor outline) {
+        var obj = new Style(this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font);
+        obj.innerSetOutline(outline);
+        return obj;
+    }
+
+    @Override
+    public @Nullable TextColor getOutline() {
+        return this.outline;
+    }
+
+    @Override
+    public void innerSetOutline(@Nullable TextColor outline) {
+        this.outline = outline;
+    }
+
     @Inject(method = "isEmpty", at = @At(value = "RETURN"), cancellable = true)
     private void isEmpty(CallbackInfoReturnable<Boolean> cir){
-        cir.setReturnValue(this.color == null && this.bold == null && this.italic == null && this.underlined == null && this.strikethrough == null && this.obfuscated == null && this.clickEvent == null && this.hoverEvent == null && this.insertion == null && this.font == null && this.badge == null);
+        cir.setReturnValue(this.color == null && this.bold == null && this.italic == null && this.underlined == null && this.strikethrough == null && this.obfuscated == null && this.clickEvent == null && this.hoverEvent == null && this.insertion == null && this.font == null && this.badge == null && this.outline == null);
     }
 
     @Inject(method = "equals", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
     private void equals(Object object, CallbackInfoReturnable<Boolean> cir){
         var isBadgeEqual = Objects.equals(this.badge, ((Style) object).getBadge());
-        cir.setReturnValue(cir.getReturnValue() && isBadgeEqual);
+        var isOutlineEqual = Objects.equals(this.outline, ((Style) object).getOutline());
+        cir.setReturnValue(cir.getReturnValue() && isBadgeEqual && isOutlineEqual);
     }
 
     /**
@@ -87,7 +106,8 @@ public abstract class StyleMixin implements StyleInjector{
                 this.hoverEvent == null ? style.getHoverEvent() : this.hoverEvent,
                 this.insertion == null ? style.getInsertion() : this.insertion,
                 this.font == null ? style.getFont() : this.font)
-                    .withBadge(this.badge == null ? style.getBadge() : this.badge);
+                    .withBadge(this.badge == null ? style.getBadge() : this.badge)
+                    .withOutline(this.outline == null ? style.getOutline() : this.outline);
     }
 
     @Redirect(method = "toString", at = @At(value = "INVOKE",
@@ -105,11 +125,12 @@ public abstract class StyleMixin implements StyleInjector{
         }
         Collector cl = new Collector();
         cl.addValueString("badge", this.badge);
+        cl.addValueString("outline", this.outline);
         return instance.append(str);
     }
 
     private void appendStyleProperties(@NotNull CallbackInfoReturnable<Style> cir){
-        cir.setReturnValue(cir.getReturnValue().withBadge(this.badge));
+        cir.setReturnValue(cir.getReturnValue().withBadge(this.badge).withOutline(this.outline));
     }
 
     @Inject(method = {"applyFormat", "applyLegacyFormat"}, at = @At(value = "RETURN", ordinal = 1), cancellable = true)
@@ -124,7 +145,7 @@ public abstract class StyleMixin implements StyleInjector{
 
     @Inject(method = "withColor(Lnet/minecraft/network/chat/TextColor;)Lnet/minecraft/network/chat/Style;", at = @At("RETURN"), cancellable = true)
     private void withColor(@Nullable TextColor color, @NotNull CallbackInfoReturnable<Style> cir) {
-        cir.setReturnValue(cir.getReturnValue().withBadge(this.badge));
+        this.appendStyleProperties(cir);
     }
 
     @Inject(method = {"withBold", "withItalic", "withUnderlined", "withStrikethrough", "withObfuscated"}, at = @At("RETURN"), cancellable = true)

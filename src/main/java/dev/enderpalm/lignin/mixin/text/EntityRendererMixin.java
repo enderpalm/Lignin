@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Reorder and flip render layer of <b>renderNameTag()</b> method.
+ * Reorder and flip render layer of <rawB>renderNameTag()</rawB> method.
  * @reason Z-offset is opposite to usual UI components rendering depth (in usual components, greater depth means object will be rendered in front, but in this case, it requires lesser depth to be in front) making badge render on top of text - try to render this thingy with same {@link BadgeRenderer} as other UI components
  */
 @Environment(EnvType.CLIENT)

@@ -2,6 +2,7 @@ package dev.enderpalm.lignin.mixin.text.font;
 
 import dev.enderpalm.lignin.text.container.Badge;
 import dev.enderpalm.lignin.text.FontEmphases;
+import dev.enderpalm.lignin.text.render.BadgeRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.StringSplitter;
@@ -35,7 +36,7 @@ public abstract class StringSplitterMixin {
 
     private float getModifiedGlyphWidth(StringSplitter.WidthProvider instance, int codePoint, @NotNull Style style){
         style = FontEmphases.getSwitchedFont(style);
-        float glyphWidth = instance.getWidth(codePoint, style) + Badge.renderOffset(this.prevBadge, style.getBadge(), this.isNotLineStart);
+        float glyphWidth = instance.getWidth(codePoint, style) + BadgeRenderer.renderOffset(this.prevBadge, style.getBadge(), this.isNotLineStart);
         this.prevBadge = style.getBadge();
         this.isNotLineStart = true;
         return glyphWidth;

@@ -11,12 +11,21 @@ public class StringCollector {
         this.isNotFirst = true;
     }
 
-    public StringCollector collect(String string, @Nullable Object object) {
+    public StringCollector collectValue(String string, @Nullable Object object) {
         if (object != null) {
             this.separate();
             builder.append(string);
             builder.append('=');
             builder.append(object);
+        }
+        return this;
+    }
+
+    public StringCollector collectFlag(String string, @Nullable Boolean flag){
+        if (flag != null) {
+            this.separate();
+            if (!flag) builder.append('!');
+            builder.append(string);
         }
         return this;
     }
