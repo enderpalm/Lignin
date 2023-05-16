@@ -27,7 +27,7 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
     @Shadow @Final private float u1;
 
     @Unique private byte flag;
-    private static final float[] foregroundOffset = new float[]{0.0f, 0.01f, 0.01f, 0.02f, 0.02f, 0.02f};
+    private static final float[] foregroundOffset = new float[]{0.01f, 0.00f, 0.02f, 0.01f, 0.01f, 0.01f};
 
     @Override
     public void setRenderMode(int flag) {
@@ -35,8 +35,18 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
     }
 
     @Override
+    public int getRenderMode() {
+        return this.flag;
+    }
+
+    @Override
     public boolean isInBadge() {
         return this.flag > 1;
+    }
+
+    @Override
+    public boolean isOutline() {
+        return (this.flag & 1) == 1;
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE",
@@ -49,10 +59,11 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
                 if (dx == 0 && dy == 0 || (isBadgeShadowOnly && (dx != 1 || dy != 0))) continue;
-                buffer.vertex(matrix, f + m + dx, k + dy, depth).color(red, green, blue, alpha).uv(this.u0, this.v0).uv2(packedLight).endVertex();
-                buffer.vertex(matrix, f + n + dx, l + dy, depth).color(red, green, blue, alpha).uv(this.u0, this.v1).uv2(packedLight).endVertex();
-                buffer.vertex(matrix, g + n + dx, l + dy, depth).color(red, green, blue, alpha).uv(this.u1, this.v1).uv2(packedLight).endVertex();
-                buffer.vertex(matrix, g + m + dx, k + dy, depth).color(red, green, blue, alpha).uv(this.u1, this.v0).uv2(packedLight).endVertex();
+                var italicOffset = italic ? 0.09f - 0.25f * dy : 0.0f;
+                buffer.vertex(matrix, f + m + dx + italicOffset, k + dy, depth).color(red, green, blue, alpha).uv(this.u0, this.v0).uv2(packedLight).endVertex();
+                buffer.vertex(matrix, f + n + dx + italicOffset, l + dy, depth).color(red, green, blue, alpha).uv(this.u0, this.v1).uv2(packedLight).endVertex();
+                buffer.vertex(matrix, g + n + dx + italicOffset, l + dy, depth).color(red, green, blue, alpha).uv(this.u1, this.v1).uv2(packedLight).endVertex();
+                buffer.vertex(matrix, g + m + dx + italicOffset, k + dy, depth).color(red, green, blue, alpha).uv(this.u1, this.v0).uv2(packedLight).endVertex();
             }
         }
         ci.cancel();
@@ -61,6 +72,6 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
     @ModifyArg(method = "render", at = @At(value = "INVOKE",
             target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;vertex(Lorg/joml/Matrix4f;FFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"), index = 3)
     private float originalGlyphRenderOffset(float x) {
-        return x + foregroundOffset[this.flag] + 0.015f;
+        return x + foregroundOffset[this.flag];
     }
 }

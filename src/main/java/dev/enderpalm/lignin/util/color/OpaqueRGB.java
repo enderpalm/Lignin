@@ -23,7 +23,19 @@ public final class OpaqueRGB {
     }
 
     public int getPacked() {
-        return Byte.toUnsignedInt(this.red) << 16 | Byte.toUnsignedInt(this.green) << 8 | Byte.toUnsignedInt(this.blue);
+        return this.getRed() << 16 | this.getGreen() << 8 | this.getBlue();
+    }
+
+    public int getRed() {
+        return Byte.toUnsignedInt(this.red);
+    }
+
+    public int getGreen() {
+        return Byte.toUnsignedInt(this.green);
+    }
+
+    public int getBlue() {
+        return Byte.toUnsignedInt(this.blue);
     }
 
     @Override
