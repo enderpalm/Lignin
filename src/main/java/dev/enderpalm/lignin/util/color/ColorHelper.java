@@ -18,4 +18,12 @@ public final class ColorHelper {
     public static @Nullable Integer applyAlphaLuminance(@Nullable OpaqueRGB color, float alpha, float luminance) {
         return applyAlphaLuminance(color != null ? color.getPacked() : null, alpha, luminance);
     }
+
+    public static int appendAlphaChannel(int color){
+        return ((color & -67108864) == 0) ? color | -16777216 : color;
+    }
+
+    public static @Nullable OpaqueRGB applyLuminance(@Nullable OpaqueRGB color, float dimFactor){
+       return color != null ? new OpaqueRGB((int) (color.getRed() * dimFactor), (int) (color.getGreen() * dimFactor), (int) (color.getBlue() * dimFactor)) : null;
+    }
 }

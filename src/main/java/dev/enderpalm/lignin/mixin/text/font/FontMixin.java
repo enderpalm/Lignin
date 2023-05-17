@@ -1,11 +1,13 @@
 package dev.enderpalm.lignin.mixin.text.font;
 
 import dev.enderpalm.lignin.text.StringRenderOutputAccessor;
+import dev.enderpalm.lignin.util.color.ColorHelper;
 import dev.enderpalm.lignin.util.color.OpaqueRGB;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +25,11 @@ public abstract class FontMixin {
             shift = At.Shift.BY, by = 2, ordinal = 0), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
     private void render8xOutlineAsStyle(FormattedCharSequence text, float x, float y, int color, int backgroundColor, Matrix4f matrix, MultiBufferSource bufferSource, int packedLightCoords, CallbackInfo ci, int i, Font.StringRenderOutput stringRenderOutput) {
         ((StringRenderOutputAccessor) stringRenderOutput).setCoord(x, y);
-        text.accept((idx, style, code) -> stringRenderOutput.accept(idx, style.withOutline(new OpaqueRGB(i)).withColor(color), code));
+        text.accept((idx, style, code) -> {
+            var outline = style.getOutline() != null ? style.getOutline() : new OpaqueRGB(i);
+            var textColor = style.getColor() != null ? style.getColor() : TextColor.fromRgb(ColorHelper.appendAlphaChannel(color));
+            return stringRenderOutput.accept(idx, style.withOutline(outline).withColor(textColor), code);
+        });
         stringRenderOutput.finish(0, x);
         ci.cancel();
     }
