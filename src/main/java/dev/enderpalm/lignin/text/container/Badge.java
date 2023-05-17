@@ -145,9 +145,9 @@ public record Badge(@Nullable OpaqueRGB bg0, @Nullable OpaqueRGB bg1, boolean ro
                 OpaqueRGB bg1 = getColor(obj, "bg1");
                 boolean roundCorner = obj.has("roundCorner") && GsonHelper.getAsBoolean(obj, "roundCorner");
                 ResourceLocation texture = getTexture(obj);
-                OpaqueRGB border0 = getAutoColor(obj, "border0", autoMask, 0);
-                OpaqueRGB border1 = getAutoColor(obj, "border1", autoMask, 1);
-                OpaqueRGB shadowColor = getAutoColor(obj, "shadowColor", autoMask, 2);
+                OpaqueRGB border0 = getAutoColor(obj, "border0", autoMask, 0, bg0);
+                OpaqueRGB border1 = getAutoColor(obj, "border1", autoMask, 1, bg0);
+                OpaqueRGB shadowColor = getAutoColor(obj, "shadowColor", autoMask, 2, bg0);
                 return new Badge(bg0, bg1, roundCorner, border0, border1, shadowColor, texture, autoMask[0]);
             }
             return null;
@@ -169,10 +169,14 @@ public record Badge(@Nullable OpaqueRGB bg0, @Nullable OpaqueRGB bg1, boolean ro
             return null;
         }
 
-        private static @Nullable OpaqueRGB getAutoColor(JsonObject json, String key, byte[] mask, int bitOrdinal) {
+        private static @Nullable OpaqueRGB getAutoColor(JsonObject json, String key, byte[] mask, int bitOrdinal, @Nullable OpaqueRGB bg0) {
             OpaqueRGB color = null;
             if (json.has(key)) {
-                if (GsonHelper.getAsString(json, key).equals(AUTO_KEYWORD)) mask[0] |= (1 << bitOrdinal);
+                if (GsonHelper.getAsString(json, key).equals(AUTO_KEYWORD)) {
+                    if (bg0 == null)
+                        throw new IllegalArgumentException("Auto color mode for " + key + " requires bg0 to inherit from.");
+                    mask[0] |= (1 << bitOrdinal);
+                }
                 else color = getColor(json, key);
                 return color;
             }

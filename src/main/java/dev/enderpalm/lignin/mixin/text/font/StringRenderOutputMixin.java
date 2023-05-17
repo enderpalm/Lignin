@@ -63,7 +63,7 @@ public abstract class StringRenderOutputMixin implements StringRenderOutputAcces
         Badge currentBadge = style.getBadge();
         var offset = BadgeRenderer.renderOffset(this.prevBadge, currentBadge, this.isNotLineStart);
         this.x += offset;
-        if (currentBadge != null) {
+        if (BadgeRenderer.shouldRender(currentBadge)) {
             if (offset != 0)
                 this.badgeBuffer.add(new Badge.BadgeBuffer(currentBadge, this.x - BadgeRenderer.BADGE_BORDER_SPACER));
             this.badgeBuffer.get(this.badgeBuffer.size() - 1).setX1(this.x + glyphInfo.getAdvance(style.isBold()));
@@ -77,7 +77,7 @@ public abstract class StringRenderOutputMixin implements StringRenderOutputAcces
             locals = LocalCapture.CAPTURE_FAILSOFT)
     private void renderBadgeShadowOrOutline(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir, FontSet fontSet, GlyphInfo glyphInfo, BakedGlyph bakedGlyph, boolean bl, float g, float h, float l, float f, TextColor textColor, float m, float n, VertexConsumer vertexConsumer) {// prefer 1-3-4-5
         var curBadge = style.getBadge();
-        var isInBadge = curBadge != null;
+        var isInBadge = BadgeRenderer.shouldRender(curBadge);
         var bgRenderMode = !isInBadge ? 0 : (curBadge.isAuto(2) || curBadge.shadowColor() != null ? 4 : 2);
         var hasOutline = style.getOutline() != null;
 

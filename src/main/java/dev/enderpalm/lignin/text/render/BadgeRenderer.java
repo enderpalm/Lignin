@@ -23,6 +23,7 @@ public final class BadgeRenderer {
     private static final ResourceLocation WHITE_TEXTURE = new ResourceLocation("textures/misc/white.png");
 
     public static void render(Badge badge, float x0, float x1, float y0, float y1, float depth, float alpha, float dim, Matrix4f poseMatrix, MultiBufferSource bufferSource, Font.DisplayMode displayMode, int packedLightCoords) {
+        if (!shouldRender(badge)) return;
         renderSolidBadge(badge, bufferSource, poseMatrix, x0, y0, x1, y1, depth, alpha, dim, displayMode, packedLightCoords);
     }
 
@@ -30,8 +31,8 @@ public final class BadgeRenderer {
         VertexConsumer consumer = bufferSource.getBuffer(Font.DisplayMode.SEE_THROUGH.equals(displayMode) ? RenderType.textIntensitySeeThrough(WHITE_TEXTURE) : RenderType.textIntensity(WHITE_TEXTURE));
         var bg0 = ColorHelper.applyAlphaLuminance(badge.bg0(), alpha, dim);
         var bg1 = ColorHelper.applyAlphaLuminance(badge.bg1(), alpha, dim);
-        if (bg0 != null)
-            renderSolidQuad(consumer, poseMatrix, x0, y0, x1, y1, depth, bg0, bg1 == null ? bg0 : bg1, packedLightCoords);
+        assert bg0 != null;
+        renderSolidQuad(consumer, poseMatrix, x0, y0, x1, y1, depth, bg0, bg1 == null ? bg0 : bg1, packedLightCoords);
     }
 
     private static void renderSolidQuad(@NotNull VertexConsumer consumer, Matrix4f poseMatrix, float x0, float y0, float x1, float y1, float depth, int color0, int color1, int packedLightCoords) {
@@ -51,10 +52,16 @@ public final class BadgeRenderer {
      */
     public static int renderOffset(@Nullable Badge prev, @Nullable Badge cur, boolean notLineStart) {
         var lineOffset = notLineStart ? 1 : 0;
-        if (prev != null && cur != null && !prev.equals(cur)) // different
-            return (BADGE_BORDER_SPACER << 1) + lineOffset;
-        else if ((prev == null && cur != null) || (prev != null && cur == null)) // entering - leaving
+        var prevResult = shouldRender(prev);
+        var curResult = shouldRender(cur);
+        if (prevResult && curResult && !prev.equals(cur)) // different
+            return (BADGE_BORDER_SPACER << 1) + lineOffset; // 1st offset + spacer(1px) + 2nd offset
+        else if ((!prevResult && curResult) || (prevResult && !curResult)) // entering - leaving
             return BADGE_BORDER_SPACER + lineOffset;
         return 0;
+    }
+
+    public static boolean shouldRender(@Nullable Badge badge) {
+        return badge != null && !badge.isEmpty() && (badge.bg0() != null || badge.border0() != null);
     }
 }
